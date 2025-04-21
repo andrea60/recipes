@@ -3,6 +3,8 @@ import { ModalContentProps, useModal } from "../../components/modal/useModal";
 import { useConfirm } from "../../components/modal/useConfirm";
 import { useState } from "react";
 import cn from "classnames";
+import { showToast, ToastOptions } from "../../components/toastr/useToast";
+import { CheckIcon } from "@heroicons/react/24/outline";
 export const Route = createFileRoute("/recipes/")({
   component: RouteComponent,
   beforeLoad: () => {
@@ -36,6 +38,16 @@ function RouteComponent() {
 
     setConf(confirmed);
   };
+
+  const displayToast = (severity: ToastOptions["severity"]) => {
+    showToast({
+      content: "This is a sample notification",
+      title: "Recipe Created",
+      icon: <CheckIcon />,
+      severity: severity,
+      type: "sticky",
+    });
+  };
   return (
     <div className="card card-border card-sm">
       <div className="card-body">
@@ -50,6 +62,32 @@ function RouteComponent() {
         >
           Open Confirmation Dialog
         </button>
+        <div className="flex gap-2">
+          <button
+            className="btn btn-sm btn-neutral"
+            onClick={() => displayToast("success")}
+          >
+            Success
+          </button>
+          <button
+            className="btn btn-sm btn-neutral"
+            onClick={() => displayToast("warning")}
+          >
+            Warning
+          </button>
+          <button
+            className="btn btn-sm btn-neutral"
+            onClick={() => displayToast("error")}
+          >
+            Error
+          </button>
+          <button
+            className="btn btn-sm btn-neutral"
+            onClick={() => displayToast("default")}
+          >
+            Default
+          </button>
+        </div>
       </div>
     </div>
   );

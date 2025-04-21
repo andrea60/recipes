@@ -6,8 +6,9 @@ export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     await auth.authStateReady();
     if (auth.currentUser) {
+      console.log("Checking auth state, ", auth.currentUser);
       throw redirect({
-        to: "/",
+        to: "/recipes",
       });
     }
   },

@@ -2,9 +2,9 @@ import { atom, useAtom } from "jotai";
 import { Overlay } from "./Overlay";
 import { PropsWithChildren } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { motion } from "framer-motion";
 
 type ModalCloseReason = "cancel" | "complete";
-type ModalMode = "overlay" | "dialog";
 type OpenModalState<TResult = any, TProps = any> = {
   isOpen: true;
   component: ModalContentComponent<TResult, TProps>;
@@ -117,7 +117,11 @@ const DialogModalWrapper = (
   props: PropsWithChildren<{ title: string; onCancel: () => void }>
 ) => {
   return (
-    <div className="card card-sm shadow-xl mx-2">
+    <motion.div
+      initial={{ y: 25 }}
+      animate={{ y: 0 }}
+      className="card card-sm shadow-xl mx-2"
+    >
       <div className="card-body">
         <h1 className="card-title flex justify-between">
           {props.title}
@@ -129,6 +133,6 @@ const DialogModalWrapper = (
         </h1>
         {props.children}
       </div>
-    </div>
+    </motion.div>
   );
 };
