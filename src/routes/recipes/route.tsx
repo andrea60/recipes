@@ -27,14 +27,11 @@ export const Route = createFileRoute("/recipes")({
 function RouteComponent() {
   const { signOut } = useAuth();
   return (
-    <div className="flex flex-col h-full relative bg-secondary">
-      <div className="p-6 pb-4">
-        <h1 className="font-extrabold text-2xl">Your Recipes Cookbook</h1>
-      </div>
-      <div className="bg-base-200 flex-1 p-6 pt-4 rounded-t-3xl shadow-md">
+    <div className="flex flex-col h-full relative">
+      <div className="background flex-1 p-6 pt-4">
         <Outlet />
       </div>
-      <div className="bg-base-100 fixed bottom-0 left-0 w-full shadow-lg rounded-t-3xl pt-2">
+      <div className="glass-bg border border-base-300 fixed bottom-0 left-0 w-full shadow-lg rounded-t-3xl pt-2">
         <NavigationBar
           links={[
             { to: "/recipes", icon: ListBulletIcon, label: "Recipes" },

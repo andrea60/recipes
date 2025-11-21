@@ -49,7 +49,7 @@ function RouteComponent() {
     });
   };
   return (
-    <div className="card card-border card-sm">
+    <div className="card card-border card-sm card-default">
       <div className="card-body">
         <div className="card-title">Example Card content</div>
         <button className="btn btn-sm btn-neutral" onClick={handleModalClick}>
@@ -64,25 +64,25 @@ function RouteComponent() {
         </button>
         <div className="flex gap-2">
           <button
-            className="btn btn-sm btn-neutral"
+            className="btn btn-sm btn-success"
             onClick={() => displayToast("success")}
           >
             Success
           </button>
           <button
-            className="btn btn-sm btn-neutral"
+            className="btn btn-sm btn-warning"
             onClick={() => displayToast("warning")}
           >
             Warning
           </button>
           <button
-            className="btn btn-sm btn-neutral"
+            className="btn btn-sm btn-error"
             onClick={() => displayToast("error")}
           >
             Error
           </button>
           <button
-            className="btn btn-sm btn-neutral"
+            className="btn btn-sm btn-default"
             onClick={() => displayToast("default")}
           >
             Default
