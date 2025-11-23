@@ -9,3 +9,10 @@ export type IngredientRef = {
   quantity: number;
   unit: string;
 };
+
+export type Recipe = {
+  id: string;
+  name: string;
+  content: string;
+  ingredients: IngredientRef[];
+};

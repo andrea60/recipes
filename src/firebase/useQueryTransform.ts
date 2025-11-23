@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { QueryResult } from "./useRealtimeQuery";
+import { QueryResult } from "./queries/useRealtimeQuery";
 
 export const useQueryTransform = <TData, TResult>(
   query: QueryResult<TData>,

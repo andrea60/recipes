@@ -1,12 +1,13 @@
-import { atom, useAtom } from "jotai";
 import { Overlay } from "./Overlay";
 import { PropsWithChildren } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
-
+import { create } from "zustand";
+import classNames from "classnames";
 type ModalCloseReason = "cancel" | "complete";
 type OpenModalState<TResult = any, TProps = any> = {
   isOpen: true;
+  force?: boolean;
   component: ModalContentComponent<TResult, TProps>;
   componentProps: TProps;
   close: (result: ModalResult<TResult>) => void;
@@ -19,6 +20,7 @@ type OpenOverlayModalState = {
 type OpenDialogModalState = {
   mode: "dialog";
   title: string;
+  fullWidth?: boolean;
 };
 
 type CloseModalState = {
@@ -26,13 +28,16 @@ type CloseModalState = {
 };
 
 type ModalState = OpenModalState | CloseModalState;
+type InternalModalState = {
+  updateState: (state: ModalState) => void;
+} & ModalState;
 
 type ModalResult<TResult> = {
   result: TResult;
   reason: ModalCloseReason;
 };
 
-export type ModalContentProps<TResult, TProps> = TProps & {
+export type ModalContentProps<TResult = {}, TProps = {}> = TProps & {
   close: (result: TResult) => void;
   cancel: () => void;
 };
@@ -41,15 +46,19 @@ type ModalContentComponent<
   TProps = unknown,
 > = React.ComponentType<ModalContentProps<TResult, TProps>>;
 
-const modalAtom = atom<ModalState>({ isOpen: false });
+const useModalState = create<InternalModalState>((set) => ({
+  isOpen: false,
+  updateState: (state: ModalState) => set(state),
+}));
 
 export const useModal = () => {
-  const [modal, setModal] = useAtom(modalAtom);
+  const { updateState, ...modal } = useModalState();
 
   const openModal = async <TResult = void, TProps = unknown>(
     opts: {
       component: ModalContentComponent<TResult, TProps>;
       componentProps: Omit<TProps, "close" | "cancel">;
+      force?: boolean;
     } & (OpenDialogModalState | OpenOverlayModalState)
   ): Promise<ModalResult<TResult>> => {
     let completeModal: (result: ModalResult<TResult>) => void = () => {};
@@ -58,7 +67,7 @@ export const useModal = () => {
       (resolve) => (completeModal = resolve)
     );
 
-    setModal({
+    updateState({
       isOpen: true,
       close: completeModal,
       ...opts,
@@ -68,19 +77,19 @@ export const useModal = () => {
       const result = await waitingPromise;
       return result;
     } finally {
-      setModal({ isOpen: false });
+      updateState({ isOpen: false });
     }
   };
 
   const closeModal = () => {
-    setModal({ isOpen: false });
+    updateState({ isOpen: false });
   };
 
   return { openModal, closeModal, isModalActive: modal.isOpen };
 };
 
 export const ModalRenderer = () => {
-  const [modal] = useAtom(modalAtom);
+  const modal = useModalState();
 
   const cancel = () => {
     if (!modal.isOpen) return;
@@ -100,12 +109,21 @@ export const ModalRenderer = () => {
     <Content {...modal.componentProps} cancel={cancel} close={close} />
   );
 
+  const handleBackdropClick = () => {
+    if (modal.force) return;
+    cancel();
+  };
+
   return (
-    <Overlay onBackdropClick={cancel}>
+    <Overlay onBackdropClick={handleBackdropClick} zIndex={20}>
       {modal.mode == "overlay" ? (
         overlayContent
       ) : (
-        <DialogModalWrapper title={modal.title} onCancel={cancel}>
+        <DialogModalWrapper
+          title={modal.title}
+          fullWidth={modal.mode == "dialog" && (modal.fullWidth ?? false)}
+          onCancel={modal.force ? undefined : cancel}
+        >
           {overlayContent}
         </DialogModalWrapper>
       )}
@@ -114,22 +132,30 @@ export const ModalRenderer = () => {
 };
 
 const DialogModalWrapper = (
-  props: PropsWithChildren<{ title: string; onCancel: () => void }>
+  props: PropsWithChildren<{
+    title: string;
+    onCancel?: () => void;
+    fullWidth: boolean;
+  }>
 ) => {
   return (
     <motion.div
       initial={{ y: 25 }}
       animate={{ y: 0 }}
-      className="card card-sm shadow-xl mx-2"
+      className={classNames("card card-sm shadow-xl mx-2", {
+        "w-full": props.fullWidth,
+      })}
     >
       <div className="card-body">
         <h1 className="card-title flex justify-between">
           {props.title}
-          <XMarkIcon
-            role="button"
-            onClick={props.onCancel}
-            className="size-4"
-          />
+          {!!props.onCancel && (
+            <XMarkIcon
+              role="button"
+              onClick={props.onCancel}
+              className="size-4"
+            />
+          )}
         </h1>
         {props.children}
       </div>

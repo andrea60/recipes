@@ -28,10 +28,10 @@ function RouteComponent() {
   const { signOut } = useAuth();
   return (
     <div className="flex flex-col h-full relative">
-      <div className="background flex-1 p-6 pt-4">
+      <div className="background flex-1 p-4 flex flex-col">
         <Outlet />
       </div>
-      <div className="glass-bg border border-base-300 fixed bottom-0 left-0 w-full shadow-lg rounded-t-3xl pt-2">
+      {/* <div className="glass-bg border border-base-300 fixed bottom-0 left-0 w-full shadow-lg rounded-t-3xl pt-2">
         <NavigationBar
           links={[
             { to: "/recipes", icon: ListBulletIcon, label: "Recipes" },
@@ -43,7 +43,7 @@ function RouteComponent() {
             },
           ]}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

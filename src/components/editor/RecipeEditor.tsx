@@ -1,5 +1,5 @@
 import { BulletList, ListItem } from "@tiptap/extension-list";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -11,21 +11,13 @@ import {
   IngredientSelectorPopover,
   mentionsAtom,
 } from "./IngredientSelectorPopover";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { IngredientRef } from "../../data/models";
 
 type Props = {
   initialContent: string;
+  readonly: boolean;
   onChange: (content: string, ingredientRefs: IngredientRef[]) => void;
-};
-
-export const RecipeEditor = (props: Props) => {
-  return (
-    <Provider>
-      <RecipeEditorImp {...props} />
-      <IngredientSelectorPopover />
-    </Provider>
-  );
 };
 
 const CustomMention = Mention.extend({
@@ -66,82 +58,106 @@ const CustomMention = Mention.extend({
 
 export const localIngredientsAtom = atom<IngredientRef[]>([]);
 
-const RecipeEditorImp = ({ initialContent, onChange }: Props) => {
+export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
   const [_, setMentionsState] = useAtom(mentionsAtom);
   const setLocalIngredients = useSetAtom(localIngredientsAtom);
+  const editorRef = useRef<HTMLDivElement>(null);
 
-  const editor = useEditor({
-    extensions: [
-      Document,
-      Text,
-      Paragraph,
-      BulletList,
-      ListItem,
-      Heading.configure({
-        levels: [1, 2, 3],
-      }),
-      HorizontalRule,
-      CustomMention.configure({
-        HTMLAttributes: {
-          class: "mention",
+  const editor = useEditor(
+    {
+      element: editorRef.current,
+      editable: !readonly,
+      editorProps: {
+        attributes: {
+          class: "grow",
         },
-        suggestion: {
-          char: "@",
-          allowSpaces: true,
-          render: () => {
-            return {
-              onStart: (props) => {
-                const clientRect = props.clientRect?.();
-                if (!clientRect) return;
-                setMentionsState({
-                  isOpen: true,
-                  positon: clientRect,
-                  query: props.query,
-                  onSelected: props.command,
-                });
-              },
-              onUpdate: (props) => {
-                const clientRect = props.clientRect?.();
-                if (!clientRect) return;
-                setMentionsState({
-                  isOpen: true,
-                  positon: clientRect,
-                  query: props.query,
-                  onSelected: props.command,
-                });
-              },
-              onExit: () => {
-                setMentionsState({ isOpen: false });
-              },
-            };
+      },
+      extensions: [
+        Document,
+        Text,
+        Paragraph,
+        BulletList,
+        ListItem,
+        Heading.configure({
+          levels: [1, 2, 3],
+        }),
+        HorizontalRule,
+        CustomMention.configure({
+          HTMLAttributes: {
+            class: "mention",
           },
-        },
-      }),
-    ],
-    content: initialContent,
-    onUpdate: ({ editor }) => {
-      // Parse all mentions from the editor
-      const ingredientRefs: IngredientRef[] = [];
+          suggestion: {
+            char: "@",
+            allowSpaces: true,
+            render: () => {
+              return {
+                onStart: (props) => {
+                  const clientRect = props.clientRect?.();
+                  if (!clientRect) return;
+                  setMentionsState({
+                    isOpen: true,
+                    positon: clientRect,
+                    query: props.query,
+                    onSelected: props.command,
+                  });
+                },
+                onUpdate: (props) => {
+                  const clientRect = props.clientRect?.();
+                  if (!clientRect) return;
+                  setMentionsState({
+                    isOpen: true,
+                    positon: clientRect,
+                    query: props.query,
+                    onSelected: props.command,
+                  });
+                },
+                onExit: () => {
+                  setMentionsState({ isOpen: false });
+                },
+              };
+            },
+          },
+        }),
+      ],
+      content: initialContent,
+      onUpdate: ({ editor }) => {
+        const html = editor.getHTML();
+        if (html === initialContent) return;
+        // Parse all mentions from the editor
+        const ingredientRefs: IngredientRef[] = [];
 
-      editor.state.doc.descendants((node) => {
-        if (node.type.name === "mention") {
-          ingredientRefs.push({
-            id: node.attrs.id,
-            name: node.attrs.name,
-            quantity: node.attrs.quantity,
-            unit: node.attrs.unit,
-          });
-        }
-      });
+        editor.state.doc.descendants((node) => {
+          if (node.type.name === "mention") {
+            ingredientRefs.push({
+              id: node.attrs.id,
+              name: node.attrs.name,
+              quantity: node.attrs.quantity,
+              unit: node.attrs.unit,
+            });
+          }
+        });
 
-      setLocalIngredients(ingredientRefs);
-      onChange(editor.getHTML(), ingredientRefs);
+        setLocalIngredients(ingredientRefs);
+        onChange(html, ingredientRefs);
+      },
     },
-  });
+    []
+  );
+
+  useEffect(() => {
+    editor.setEditable(!readonly);
+  }, [readonly]);
+
   useEffect(() => {
     if (editor.getHTML() !== initialContent)
       editor.commands.setContent(initialContent);
   }, [initialContent]);
 
-  return <EditorContent editor={editor} />;
+  return (
+    <>
+      <IngredientSelectorPopover />
+      <div ref={editorRef} className="grow flex flex-col" />
+      <div className="fixed bottom-0 left-0 p-2 w-full">asd</div>
+    </>
+  );
 };

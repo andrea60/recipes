@@ -6,15 +6,14 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 
-type PendingQuery = {
+export type PendingQuery = {
   pending: true;
   data?: undefined;
 };
-type ReadyQuery<TData> = {
+export type ReadyQuery<TData> = {
   pending: false;
   data: TData[];
 };
-
 export type QueryResult<TData> = PendingQuery | ReadyQuery<TData>;
 
 export const useRealtimeQuery = <TData, TDoc extends DocumentData>(

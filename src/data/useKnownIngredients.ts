@@ -1,6 +1,6 @@
 import { ingredientsCollection } from "../firebase/firebase-collections";
 import { useAsyncAction } from "../firebase/useAsyncAction";
-import { useRealtimeQuery } from "../firebase/useRealtimeQuery";
+import { useRealtimeQuery } from "../firebase/queries/useRealtimeQuery";
 import { doc, setDoc } from "firebase/firestore";
 
 export const useKnownIngredients = () => {
