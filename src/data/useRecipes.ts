@@ -1,4 +1,4 @@
-import { recipesCollection } from "../firebase/firebase-collections";
+import { recipesCollection } from "../firebase/firebase-references";
 import { useRealtimeQuery } from "../firebase/queries/useRealtimeQuery";
 
 export const useRecipes = () => {

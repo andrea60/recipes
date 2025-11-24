@@ -1,5 +1,5 @@
 import { DocumentData, DocumentReference, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export type PendingDoc = {
   pending: true;
@@ -24,7 +24,8 @@ export type ReadyDoc<TData> = {
 export type DocResult<TData> = PendingDoc | ReadyDoc<TData>;
 
 export const useDoc = <TData, TDoc extends DocumentData>(
-  doc: DocumentReference<TData, TDoc>
+  doc: DocumentReference<TData, TDoc>,
+  deps: unknown[]
 ): DocResult<TData> => {
   const [data, setData] = useState<TData>();
   const [found, setFound] = useState(false);
@@ -41,12 +42,17 @@ export const useDoc = <TData, TDoc extends DocumentData>(
       }
     };
 
+    setData(undefined);
+    setFound(false);
+
     fetchDoc();
-  }, []);
+  }, deps);
 
-  if (!data) return { pending: true };
+  return useMemo(() => {
+    if (!data) return { pending: true };
 
-  if (found) return { pending: false, found: true, data };
+    if (found) return { pending: false, found: true, data };
 
-  return { pending: false, found: false };
+    return { pending: false, found: false };
+  }, [data, found]);
 };

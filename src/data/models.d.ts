@@ -14,5 +14,7 @@ export type Recipe = {
   id: string;
   name: string;
   content: string;
+  portions: number;
+  imagePath: string;
   ingredients: IngredientRef[];
 };

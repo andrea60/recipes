@@ -35,7 +35,7 @@ export const RecipeNameEditor = ({ name, readonly, onChange }: Props) => {
       <input
         type="text"
         className={classNames(
-          "input input-ghost grow font-bold text-3xl border-0! outline-0! bg-transparent!",
+          "input rounded-none grow pl-0 font-bold text-3xl border-0! outline-0! bg-transparent!",
           {
             "input-error": !valid,
           }

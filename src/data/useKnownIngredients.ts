@@ -1,4 +1,4 @@
-import { ingredientsCollection } from "../firebase/firebase-collections";
+import { ingredientsCollection } from "../firebase/firebase-references";
 import { useAsyncAction } from "../firebase/useAsyncAction";
 import { useRealtimeQuery } from "../firebase/queries/useRealtimeQuery";
 import { doc, setDoc } from "firebase/firestore";

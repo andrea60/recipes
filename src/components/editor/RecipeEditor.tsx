@@ -6,7 +6,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Heading from "@tiptap/extension-heading";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Mention from "@tiptap/extension-mention";
-import { atom, Provider, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom, useSetAtom } from "jotai";
 import {
   IngredientSelectorPopover,
   mentionsAtom,
@@ -155,9 +155,8 @@ export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
 
   return (
     <>
-      <IngredientSelectorPopover />
       <div ref={editorRef} className="grow flex flex-col" />
-      <div className="fixed bottom-0 left-0 p-2 w-full">asd</div>
+      <IngredientSelectorPopover />
     </>
   );
 };
