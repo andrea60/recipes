@@ -122,6 +122,7 @@ export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
       content: initialContent,
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
+        console.log("JSON:", editor.getJSON());
         if (html === initialContent) return;
         // Parse all mentions from the editor
         const ingredientRefs: IngredientRef[] = [];

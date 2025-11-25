@@ -143,7 +143,7 @@ const DialogModalWrapper = (
       initial={{ y: 25 }}
       animate={{ y: 0 }}
       className={classNames("card card-sm shadow-xl mx-2", {
-        "w-full": props.fullWidth,
+        "w-full max-w-lg": props.fullWidth,
       })}
     >
       <div className="card-body">

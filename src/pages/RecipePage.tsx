@@ -15,6 +15,7 @@ import { useModal } from "../components/modal/useModal";
 import { EditRecipeModal } from "../components/editor/EditRecipeModal";
 import { useEditableRecipe } from "../data/useEditableRecipe";
 import { FileDef } from "../data/useCreateRecipe";
+import { ChangePortionsModal } from "../components/editor/ChangePortionsModal";
 
 type Mode = "edit" | "cook";
 
@@ -41,6 +42,7 @@ type Props = {
 };
 const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
   const navigate = useNavigate();
+  const [cookPortions, setCookPortions] = useState(recipe.portions);
   const { openModal } = useModal();
 
   const [mode, setMode] = useState<Mode>(startingMode);
@@ -60,7 +62,6 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
 
   const handleRename = useCallback(
     debounce((newName: string) => {
-      console.log("Renaming recipe to ", newName);
       onChange({ name: newName });
     }, 500),
     [onChange]
@@ -68,12 +69,25 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
 
   const handleContentChanged = useCallback(
     debounce((content: string, ingredients: IngredientRef[]) => {
-      console.log("Updating recipe: ", content, ingredients);
-
+      if (mode !== "cook") return;
       onChange({ content, ingredients });
     }, 1000),
-    [onChange]
+    [onChange, mode]
   );
+
+  const handlePortionsButtonClick = async () => {
+    const { result, reason } = await openModal({
+      component: ChangePortionsModal,
+      title: "Change Cooking Portions",
+      componentProps: { portions: cookPortions },
+      fullWidth: true,
+      mode: "dialog",
+    });
+
+    if (reason !== "complete") return;
+
+    setCookPortions(result.portions);
+  };
 
   return (
     <Provider>
@@ -89,7 +103,6 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
           </button>
         )}
       </div>
-      <p>Makes {recipe.portions} portions:</p>
 
       <RecipeEditor
         initialContent={recipe.content}
@@ -105,15 +118,25 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
           <ArrowLeftIcon weight="regular" size={20} />
         </button>
 
-        <label className="toggle text-base-content toggle-xl">
-          <input
-            type="checkbox"
-            onChange={toggleMode}
-            checked={mode === "edit"}
-          />
-          <ChefHatIcon aria-label="disabled" size="inherit" weight="fill" />
-          <PencilIcon aria-label="enabled" size="inherit" weight="fill" />
-        </label>
+        <div className="flex gap-2">
+          {mode === "cook" && (
+            <button
+              className="btn btn-sm btn-outline glass-bg shadow-md"
+              onClick={handlePortionsButtonClick}
+            >
+              {cookPortions} Portions
+            </button>
+          )}
+          <label className="toggle text-base-content toggle-xl">
+            <input
+              type="checkbox"
+              onChange={toggleMode}
+              checked={mode === "edit"}
+            />
+            <ChefHatIcon aria-label="disabled" size="inherit" weight="fill" />
+            <PencilIcon aria-label="enabled" size="inherit" weight="fill" />
+          </label>
+        </div>
       </div>
     </Provider>
   );
