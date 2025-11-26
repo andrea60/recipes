@@ -1,5 +1,5 @@
 import { BulletList, ListItem } from "@tiptap/extension-list";
-import { useEditor } from "@tiptap/react";
+import { Editor, JSONContent, useEditor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -11,13 +11,16 @@ import {
   IngredientSelectorPopover,
   mentionsAtom,
 } from "./IngredientSelectorPopover";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IngredientRef } from "../../data/models";
+
+type JsonDocument = ReturnType<Editor["getJSON"]>;
 
 type Props = {
   initialContent: string;
   readonly: boolean;
   onChange: (content: string, ingredientRefs: IngredientRef[]) => void;
+  quantityMultiplier: number;
 };
 
 const CustomMention = Mention.extend({
@@ -58,12 +61,33 @@ const CustomMention = Mention.extend({
 
 export const localIngredientsAtom = atom<IngredientRef[]>([]);
 
-export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
+const tryParseJson = (content: string) => {
+  try {
+    return JSON.parse(content) as JsonDocument;
+  } catch {
+    return null;
+  }
+};
+
+export const RecipeEditor = ({
+  initialContent,
+  onChange,
+  readonly,
+  quantityMultiplier,
+}: Props) => {
   const [_, setMentionsState] = useAtom(mentionsAtom);
   const setLocalIngredients = useSetAtom(localIngredientsAtom);
   const editorRef = useRef<HTMLDivElement>(null);
+  const [jsonContent, setJsonContent] = useState(() =>
+    tryParseJson(initialContent)
+  );
 
-  const editor = useEditor(
+  const convertedJson = useMemo(
+    () => jsonContent && convertRecipe(jsonContent, quantityMultiplier),
+    [jsonContent, readonly, quantityMultiplier]
+  );
+
+  useEditor(
     {
       element: editorRef.current,
       editable: !readonly,
@@ -119,11 +143,14 @@ export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
           },
         }),
       ],
-      content: initialContent,
-      onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
+      content: readonly ? convertedJson : jsonContent,
+      onUpdate: ({ editor, transaction }) => {
+        if (!transaction.docChanged || readonly) return;
+        const json = editor.getJSON();
+        const jsonString = JSON.stringify(json);
         console.log("JSON:", editor.getJSON());
-        if (html === initialContent) return;
+
+        if (jsonString === JSON.stringify(jsonContent)) return;
         // Parse all mentions from the editor
         const ingredientRefs: IngredientRef[] = [];
 
@@ -139,20 +166,12 @@ export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
         });
 
         setLocalIngredients(ingredientRefs);
-        onChange(html, ingredientRefs);
+        setJsonContent(json);
+        onChange(jsonString, ingredientRefs);
       },
     },
-    []
+    [readonly, quantityMultiplier]
   );
-
-  useEffect(() => {
-    editor.setEditable(!readonly);
-  }, [readonly]);
-
-  useEffect(() => {
-    if (editor.getHTML() !== initialContent)
-      editor.commands.setContent(initialContent);
-  }, [initialContent]);
 
   return (
     <>
@@ -160,4 +179,43 @@ export const RecipeEditor = ({ initialContent, onChange, readonly }: Props) => {
       <IngredientSelectorPopover />
     </>
   );
+};
+
+const convertRecipe = (
+  content: JSONContent,
+  multiplier: number
+): JSONContent => {
+  const newNode = { ...content };
+  if (content.type === "mention") {
+    // needs to be converted
+    const ingredient = content.attrs
+      ? getIngredientRef(content.attrs)
+      : undefined;
+    if (ingredient && newNode.attrs) {
+      newNode.attrs = {
+        ...newNode.attrs,
+        label: `${ingredient.quantity * multiplier}${ingredient.unit} ${ingredient.name}`,
+      };
+    }
+  }
+
+  if (newNode.content)
+    newNode.content = newNode.content.map((c) => convertRecipe(c, multiplier));
+
+  return newNode;
+};
+
+const getIngredientRef = (
+  nodeAttrs: Record<string, any>
+): Omit<IngredientRef, "id"> | undefined => {
+  const quantity = nodeAttrs["quantity"] as number;
+  const unit = nodeAttrs["unit"] as string;
+  const name = nodeAttrs["name"] as string;
+  if (!quantity || !unit || !name) return undefined;
+
+  return {
+    name,
+    quantity,
+    unit,
+  };
 };

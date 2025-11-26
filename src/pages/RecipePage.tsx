@@ -69,7 +69,7 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
 
   const handleContentChanged = useCallback(
     debounce((content: string, ingredients: IngredientRef[]) => {
-      if (mode !== "cook") return;
+      if (mode === "cook") return;
       onChange({ content, ingredients });
     }, 1000),
     [onChange, mode]
@@ -89,6 +89,8 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
     setCookPortions(result.portions);
   };
 
+  const quantityMultiplier = cookPortions / recipe.portions;
+
   return (
     <Provider>
       <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
@@ -107,6 +109,7 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
       <RecipeEditor
         initialContent={recipe.content}
         onChange={handleContentChanged}
+        quantityMultiplier={quantityMultiplier}
         readonly={mode === "cook"}
       />
 

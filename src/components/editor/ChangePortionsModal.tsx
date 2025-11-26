@@ -29,6 +29,7 @@ export const ChangePortionsModal = ({ portions, cancel, close }: Props) => {
         </button>
         <button
           className="btn btn-primary grow"
+          disabled={value < 1}
           onClick={() => close({ portions: value })}
         >
           Cook {value} portions
