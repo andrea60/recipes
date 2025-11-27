@@ -3,13 +3,14 @@ import { Provider } from "jotai";
 import { useCallback, useState } from "react";
 import {
   ArrowLeftIcon,
+  BasketIcon,
   ChefHatIcon,
   CookingPotIcon,
   GearSixIcon,
   PencilIcon,
   UsersThreeIcon,
 } from "@phosphor-icons/react";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { RecipeNameEditor } from "../components/editor/RecipeNameEditor";
 import { IngredientRef, Recipe } from "../data/models";
 import debounce from "lodash.debounce";
@@ -19,11 +20,14 @@ import { useEditableRecipe } from "../data/useEditableRecipe";
 import { FileDef } from "../data/useCreateRecipe";
 import { ChangePortionsModal } from "../components/editor/ChangePortionsModal";
 import { IngredientsList } from "../components/editor/IngredientsList";
+import classNames from "classnames";
 
-type Mode = "edit" | "cook";
+export type RecipeMode = "edit" | "cook";
+export type RecipeView = "recipe" | "ingredients";
 
 export const RecipePage = () => {
   const { id } = useParams({ from: "/recipes/$id" });
+
   const recipeDoc = useEditableRecipe(id);
 
   if (recipeDoc.pending) return <div>Loading</div>;
@@ -32,26 +36,38 @@ export const RecipePage = () => {
   return (
     <RecipePageContent
       recipe={recipeDoc.data}
-      startingMode="cook"
       onChange={recipeDoc.updateAction.execute}
     />
   );
 };
 
 type Props = {
-  startingMode: Mode;
   recipe: Recipe;
   onChange: (update: Partial<Recipe>, image?: FileDef) => void;
 };
-const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
+const RecipePageContent = ({ recipe, onChange }: Props) => {
   const navigate = useNavigate();
+  const { mode = "cook", view = "recipe" } = useSearch({
+    from: "/recipes/$id",
+  });
   const [cookPortions, setCookPortions] = useState(recipe.portions);
   const { openModal } = useModal();
 
-  const [mode, setMode] = useState<Mode>(startingMode);
+  const setMode = (mode: RecipeMode) => {
+    navigate({ to: ".", search: { mode, view } });
+  };
+
+  const setView = (view: RecipeView) => {
+    navigate({ to: ".", search: { mode, view } });
+  };
 
   const toggleMode = () => {
-    setMode((m) => (m === "edit" ? "cook" : "edit"));
+    if (mode == "edit") {
+      setMode("cook");
+    } else {
+      setMode("edit");
+      setView("recipe");
+    }
   };
 
   const openSettings = () => {
@@ -103,24 +119,44 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
           readonly={mode === "cook"}
         />
       </div>
-      {mode === "cook" && (
-        <div className="mb-4">
-          <IngredientsList
-            ingredients={recipe.ingredients}
-            quantityMultiplier={quantityMultiplier}
-          />
+      <div className="flex justify-center">
+        <div className="tabs tabs-sm tabs-box bg-base-300 mb-2 inline-flex">
+          <button
+            disabled={mode === "edit"}
+            className={classNames("tab flex gap-2 w-44", {
+              "bg-base-200 tab-active": view === "recipe",
+            })}
+            onClick={() => setView("recipe")}
+          >
+            <CookingPotIcon weight="fill" /> Cooking Steps
+          </button>
+          <button
+            className={classNames("tab flex gap-2 w-44", {
+              "bg-base-200 tab-active": view === "ingredients",
+            })}
+            disabled={mode === "edit"}
+            onClick={() => setView("ingredients")}
+          >
+            <BasketIcon weight="fill" /> Ingredients
+          </button>
         </div>
+      </div>
+
+      {mode === "cook" && view === "ingredients" && (
+        <IngredientsList
+          ingredients={recipe.ingredients}
+          quantityMultiplier={quantityMultiplier}
+        />
       )}
 
-      <h1 className="text-xl font-bold flex gap-2 items-center mb-1">
-        <CookingPotIcon weight="fill" /> Cooking steps
-      </h1>
-      <RecipeEditor
-        initialContent={recipe.content}
-        onChange={handleContentChanged}
-        quantityMultiplier={quantityMultiplier}
-        readonly={mode === "cook"}
-      />
+      {mode === "edit" || view === "recipe" ? (
+        <RecipeEditor
+          initialContent={recipe.content}
+          onChange={handleContentChanged}
+          quantityMultiplier={quantityMultiplier}
+          readonly={mode === "cook"}
+        />
+      ) : null}
 
       <div className="fixed bottom-0 left-0 p-4 flex w-full justify-between items-center">
         <button

@@ -27,7 +27,6 @@ export const RecipesList = () => {
       modalResult.result.portions,
       modalResult.result.image
     );
-    console.log("Created recipe with ID:", id);
     navigate({ to: "/recipes/$id", params: { id } });
   };
 
@@ -45,7 +44,10 @@ export const RecipesList = () => {
             className="card card-sm card-default w-60 h-60"
             key={recipe.id}
             onClick={() =>
-              navigate({ to: "/recipes/$id", params: { id: recipe.id } })
+              navigate({
+                to: "/recipes/$id",
+                params: { id: recipe.id },
+              })
             }
           >
             <div className="card-body text">
