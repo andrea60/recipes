@@ -5,16 +5,29 @@ import Text from "@tiptap/extension-text";
 import Paragraph from "@tiptap/extension-paragraph";
 import Heading from "@tiptap/extension-heading";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import Mention from "@tiptap/extension-mention";
-import { atom, useAtom, useSetAtom } from "jotai";
+import Mention, { MentionNodeAttrs } from "@tiptap/extension-mention";
+import { atom, useSetAtom } from "jotai";
 import {
   IngredientSelectorPopover,
-  mentionsAtom,
+  IngredientsPopoverElement,
 } from "./IngredientSelectorPopover";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { IngredientRef } from "../../data/models";
 
 type JsonDocument = ReturnType<Editor["getJSON"]>;
+
+type ClosedMentionState = {
+  isOpen: false;
+};
+type OpenedMentionState = {
+  isOpen: true;
+  positon: DOMRect;
+  query: string;
+  // onKeyDown: (event: KeyboardEvent) => boolean;
+  onSelected: (item: MentionNodeAttrs) => void;
+};
+
+type MentionState = OpenedMentionState | ClosedMentionState;
 
 type Props = {
   initialContent: string;
@@ -75,7 +88,10 @@ export const RecipeEditor = ({
   readonly,
   quantityMultiplier,
 }: Props) => {
-  const [_, setMentionsState] = useAtom(mentionsAtom);
+  const [mentionsState, setMentionsState] = useState<MentionState>({
+    isOpen: false,
+  });
+  const mentionsPopoverRef = useRef<IngredientsPopoverElement>(null);
   const setLocalIngredients = useSetAtom(localIngredientsAtom);
   const editorRef = useRef<HTMLDivElement>(null);
   const [jsonContent, setJsonContent] = useState(() =>
@@ -124,6 +140,10 @@ export const RecipeEditor = ({
                     query: props.query,
                     onSelected: props.command,
                   });
+                },
+                onKeyDown: (props) => {
+                  if (!mentionsPopoverRef.current) return true;
+                  return mentionsPopoverRef.current.onKeyDown(props.event);
                 },
                 onUpdate: (props) => {
                   const clientRect = props.clientRect?.();
@@ -176,7 +196,14 @@ export const RecipeEditor = ({
   return (
     <>
       <div ref={editorRef} className="grow flex flex-col" />
-      <IngredientSelectorPopover />
+      {mentionsState.isOpen ? (
+        <IngredientSelectorPopover
+          ref={mentionsPopoverRef}
+          position={mentionsState.positon}
+          query={mentionsState.query}
+          onSelected={mentionsState.onSelected}
+        />
+      ) : null}
     </>
   );
 };

@@ -6,42 +6,81 @@ import {
   useKnownIngredients,
 } from "../../data/useKnownIngredients";
 import { MentionNodeAttrs } from "@tiptap/extension-mention";
-import { useMemo } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import { IngredientRef } from "../../data/models";
 import { searchIngredients } from "../../data/search-ingredients";
 import { useEditorIngredients } from "./useEditorIngredients";
+import { useResettableState } from "../../utils/useResettableState";
+import classNames from "classnames";
 
-type ClosedMentionState = {
-  isOpen: false;
+export type IngredientsPopoverElement = {
+  onKeyDown: (event: KeyboardEvent) => boolean;
 };
-type OpenedMentionState = {
-  isOpen: true;
-  positon?: DOMRect;
+
+type Props = {
   query: string;
-  onSelected?: (item: MentionNodeAttrs) => void;
+  position: DOMRect;
+  onSelected: (item: MentionNodeAttrs) => void;
 };
 
-type MentionState = OpenedMentionState | ClosedMentionState;
+type Option = {
+  name: string;
+  id: string;
+};
 
-export const mentionsAtom = atom<MentionState>({ isOpen: false });
-
-export const IngredientSelectorPopover = () => {
-  const [mentionsState] = useAtom(mentionsAtom);
+export const IngredientSelectorPopover = forwardRef<
+  IngredientsPopoverElement,
+  Props
+>(({ query, position, onSelected }, ref) => {
   const ingredients = useEditorIngredients();
+  const [selectedIdx, setSelectedIdx] = useResettableState(0, [query]);
 
-  const mention = mentionsState.isOpen
-    ? parseMention(mentionsState.query)
-    : null;
+  const mention = useMemo(() => parseMention(query), [query]);
 
   const searchResults = useMemo(
     () => searchIngredients(ingredients.data ?? [], mention?.name || ""),
-    [ingredients, mentionsState]
+    [ingredients, mention]
   );
 
-  if (!mentionsState.isOpen || !mentionsState.positon) return null;
+  const options = useMemo(() => {
+    const options: Option[] = [...searchResults.matching];
+    if (!searchResults.fullMatch && mention)
+      options.push({ name: mention.name, id: getIngredientId(mention.name) });
+    return options;
+  }, [searchResults]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      onKeyDown: (event) => {
+        if (event.key === "ArrowDown") {
+          console.log(searchResults.matching.length);
+          setSelectedIdx((x) => (x >= options.length - 1 ? x : x + 1));
+          return true;
+        } else if (event.key === "ArrowUp") {
+          setSelectedIdx((x) => (x <= 0 ? x : x - 1));
+          return true;
+        } else if (event.key === "Enter") {
+          const selected = options[selectedIdx];
+          if (selected && mention) handleSelect({ ...mention, ...selected });
+          return true;
+        }
+
+        return false;
+      },
+    }),
+    [options]
+  );
 
   const handleSelect = (ingredient: IngredientRef) => {
-    mentionsState.onSelected?.({
+    console.log("Ingredient selected", ingredient);
+    onSelected({
       ...ingredient,
       label: `${ingredient.quantity}${ingredient.unit} ${ingredient.name}`,
     });
@@ -52,9 +91,12 @@ export const IngredientSelectorPopover = () => {
     if (!ingredients.pending)
       content = (
         <>
-          {searchResults.matching.map((i) => (
+          {options.map((i, idx) => (
             <button
-              className="btn btn-ghost grow"
+              key={i.id}
+              className={classNames("btn grow btn-sm", {
+                "border-primary": idx === selectedIdx,
+              })}
               onClick={() =>
                 handleSelect({
                   ...i,
@@ -63,19 +105,10 @@ export const IngredientSelectorPopover = () => {
                 })
               }
             >
-              {mention.quantity}
-              {mention.unit} {i.name}
+              {mention.quantity} {mention.unit}{" "}
+              <span className="font-bold">{i.name}</span>
             </button>
           ))}
-          {!searchResults.fullMatch && (
-            <button
-              className="btn btn-ghost grow"
-              onClick={() => handleSelect(mention)}
-            >
-              {mention.quantity}
-              {mention.unit} {mention.name} (new)
-            </button>
-          )}
         </>
       );
     else content = <div>Loading...</div>;
@@ -83,16 +116,25 @@ export const IngredientSelectorPopover = () => {
 
   return (
     <div
-      className="absolute bg-base-100 rounded-2xl shadow-md p-2 flex flex-col"
+      className="absolute bg-base-100 rounded-2xl shadow-md p-2"
       style={{
-        left: mentionsState.positon.left + mentionsState.positon.width,
-        top: mentionsState.positon.top + mentionsState.positon.height,
+        left: position.left + position.width,
+        top: position.top + position.height,
       }}
     >
-      {content}
+      <div className="card card-sm">
+        <div className="card-body p-2">
+          <div className="card-title text-xs border-primary/10 border-b pb-1">
+            Use Ingredient
+          </div>
+          {content}
+        </div>
+      </div>
     </div>
   );
-};
+});
+
+IngredientSelectorPopover.displayName = "IngredientSelectorPopover";
 
 const parseMention = (text: string): IngredientRef | null => {
   if (!text || text.trim().length === 0) return null;

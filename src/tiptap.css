@@ -38,6 +38,6 @@
 }
 
 .tiptap .mention {
-    @apply badge shadow-md;
+    @apply badge shadow-md px-2;
     margin-top:-2px;
 }

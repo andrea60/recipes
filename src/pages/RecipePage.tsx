@@ -4,8 +4,10 @@ import { useCallback, useState } from "react";
 import {
   ArrowLeftIcon,
   ChefHatIcon,
+  CookingPotIcon,
   GearSixIcon,
   PencilIcon,
+  UsersThreeIcon,
 } from "@phosphor-icons/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { RecipeNameEditor } from "../components/editor/RecipeNameEditor";
@@ -16,6 +18,7 @@ import { EditRecipeModal } from "../components/editor/EditRecipeModal";
 import { useEditableRecipe } from "../data/useEditableRecipe";
 import { FileDef } from "../data/useCreateRecipe";
 import { ChangePortionsModal } from "../components/editor/ChangePortionsModal";
+import { IngredientsList } from "../components/editor/IngredientsList";
 
 type Mode = "edit" | "cook";
 
@@ -99,13 +102,17 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
           onChange={handleRename}
           readonly={mode === "cook"}
         />
-        {mode === "edit" && (
-          <button className="btn btn-circle btn-ghost" onClick={openSettings}>
-            <GearSixIcon size="28" weight="fill" />
-          </button>
-        )}
       </div>
+      {mode === "cook" && (
+        <div className="mb-4">
+          <IngredientsList />
+        </div>
+      )}
 
+      <h1 className="text-lg font-bold flex gap-2 items-center mb-1">
+        <CookingPotIcon weight="fill" /> Cooking steps (
+        {mode === "cook" ? cookPortions : recipe.portions} portions)
+      </h1>
       <RecipeEditor
         initialContent={recipe.content}
         onChange={handleContentChanged}
@@ -127,7 +134,15 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
               className="btn btn-sm btn-outline glass-bg shadow-md"
               onClick={handlePortionsButtonClick}
             >
-              {cookPortions} Portions
+              <UsersThreeIcon size="20" weight="bold" /> {cookPortions} Portions
+            </button>
+          )}
+          {mode === "edit" && (
+            <button
+              className="btn btn-sm btn-circle btn-outline glass-bg shadow-md"
+              onClick={openSettings}
+            >
+              <GearSixIcon size="20" weight="fill" />
             </button>
           )}
           <label className="toggle text-base-content toggle-xl">
