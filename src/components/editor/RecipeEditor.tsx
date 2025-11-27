@@ -119,7 +119,7 @@ export const RecipeEditor = ({
         BulletList,
         ListItem,
         Heading.configure({
-          levels: [1, 2, 3],
+          levels: [1, 2],
         }),
         HorizontalRule,
         CustomMention.configure({
@@ -172,22 +172,26 @@ export const RecipeEditor = ({
 
         if (jsonString === JSON.stringify(jsonContent)) return;
         // Parse all mentions from the editor
-        const ingredientRefs: IngredientRef[] = [];
+        const ingredientRefs = new Map<string, IngredientRef>();
 
         editor.state.doc.descendants((node) => {
-          if (node.type.name === "mention") {
-            ingredientRefs.push({
+          const ingredientData = getIngredientRef(node.attrs);
+          if (node.type.name === "mention" && !!ingredientData) {
+            const total = ingredientRefs.get(ingredientData.id)?.quantity ?? 0;
+            ingredientRefs.set(ingredientData.id, {
               id: node.attrs.id,
               name: node.attrs.name,
-              quantity: node.attrs.quantity,
+              quantity: total + ingredientData.quantity,
               unit: node.attrs.unit,
             });
           }
         });
 
-        setLocalIngredients(ingredientRefs);
+        const ingredientRefsArray = Array.from(ingredientRefs.values());
+
+        setLocalIngredients(ingredientRefsArray);
         setJsonContent(json);
-        onChange(jsonString, ingredientRefs);
+        onChange(jsonString, ingredientRefsArray);
       },
     },
     [readonly, quantityMultiplier]
@@ -234,13 +238,15 @@ const convertRecipe = (
 
 const getIngredientRef = (
   nodeAttrs: Record<string, any>
-): Omit<IngredientRef, "id"> | undefined => {
+): IngredientRef | undefined => {
   const quantity = nodeAttrs["quantity"] as number;
   const unit = nodeAttrs["unit"] as string;
   const name = nodeAttrs["name"] as string;
-  if (!quantity || !unit || !name) return undefined;
+  const id = nodeAttrs["id"] as string;
+  if (!quantity || !unit || !name || !id) return undefined;
 
   return {
+    id,
     name,
     quantity,
     unit,

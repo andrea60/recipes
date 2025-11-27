@@ -87,7 +87,6 @@ body, html, #root {
 
 
 
-
 @plugin "daisyui/theme" {
   name: "coffee";
   default: true;
@@ -119,6 +118,7 @@ body, html, #root {
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
+  --scale: 0.1;
   --depth: 0;
   --noise: 0;
 }

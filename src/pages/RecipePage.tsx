@@ -105,13 +105,15 @@ const RecipePageContent = ({ recipe, startingMode, onChange }: Props) => {
       </div>
       {mode === "cook" && (
         <div className="mb-4">
-          <IngredientsList />
+          <IngredientsList
+            ingredients={recipe.ingredients}
+            quantityMultiplier={quantityMultiplier}
+          />
         </div>
       )}
 
-      <h1 className="text-lg font-bold flex gap-2 items-center mb-1">
-        <CookingPotIcon weight="fill" /> Cooking steps (
-        {mode === "cook" ? cookPortions : recipe.portions} portions)
+      <h1 className="text-xl font-bold flex gap-2 items-center mb-1">
+        <CookingPotIcon weight="fill" /> Cooking steps
       </h1>
       <RecipeEditor
         initialContent={recipe.content}

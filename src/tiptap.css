@@ -3,7 +3,7 @@
 .tiptap {
     outline:none !important;
     border:none !important;
-    font-size:0.9rem;
+    @apply text-base;
 }
 .tiptap ul {
   padding-left: 1.25rem;
@@ -13,23 +13,18 @@
 }
 
 .tiptap h1 {
-    font-size: 1.6rem;
+    @apply text-xl;
     font-weight: 700;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
 .tiptap h2 {
-    font-size: 1.25rem;
+    @apply text-lg;
     font-weight: 700;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
-.tiptap h3 {
-    font-size: 1.25rem;
-    /* font-weight: 700; */
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-}
+
 
 .tiptap hr{
     margin:0.5rem 0;
