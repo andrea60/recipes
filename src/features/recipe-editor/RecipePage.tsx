@@ -21,7 +21,7 @@ import { FileDef } from "../../data/useCreateRecipe";
 import { ChangePortionsModal } from "./ChangePortionsModal";
 import { IngredientsList } from "./IngredientsList";
 import classNames from "classnames";
-
+import { AnimatePresence, motion } from "motion/react";
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
 
@@ -143,21 +143,38 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
         </div>
       </div>
 
-      {mode === "cook" && view === "ingredients" && (
-        <IngredientsList
-          ingredients={recipe.ingredients}
-          quantityMultiplier={quantityMultiplier}
-        />
-      )}
+      <AnimatePresence mode="popLayout">
+        {mode === "cook" && view === "ingredients" && (
+          <motion.div
+            key="ingredients"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{}}
+          >
+            <IngredientsList
+              ingredients={recipe.ingredients}
+              quantityMultiplier={quantityMultiplier}
+            />
+          </motion.div>
+        )}
 
-      {mode === "edit" || view === "recipe" ? (
-        <RecipeEditor
-          initialContent={recipe.content}
-          onChange={handleContentChanged}
-          quantityMultiplier={quantityMultiplier}
-          readonly={mode === "cook"}
-        />
-      ) : null}
+        {mode === "edit" || view === "recipe" ? (
+          <motion.div
+            key="recipe"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+          >
+            <RecipeEditor
+              initialContent={recipe.content}
+              onChange={handleContentChanged}
+              quantityMultiplier={quantityMultiplier}
+              readonly={mode === "cook"}
+            />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       <div className="fixed bottom-0 left-0 p-4 flex w-full justify-between items-center">
         <button

@@ -14,7 +14,7 @@ export const Route = createFileRoute("/recipes")({
 
 function RouteComponent() {
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full relative overflow-x-hidden">
       <div className="background flex-1 p-4 flex flex-col">
         <Outlet />
       </div>
