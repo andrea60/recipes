@@ -2,8 +2,8 @@ import { Recipe } from "../../data/models";
 import { FileDef } from "../../data/useCreateRecipe";
 import { useEditRecipe } from "../../data/useEditableRecipe";
 import { useTrackedState } from "../../utils/useTrackedState";
-import { FileInput } from "../FileInput";
-import { ModalContentProps } from "../modal/useModal";
+import { FileInput } from "../../components/FileInput";
+import { ModalContentProps } from "../../components/modal/useModal";
 
 type ModalProps = ModalContentProps<{}, Recipe>;
 export const EditRecipeModal = ({ close, cancel, ...recipe }: ModalProps) => {

@@ -1,18 +1,9 @@
-import { atom, useAtom } from "jotai";
 import {
   getIngredientId,
   normalizeIngredientName,
-  useCreateIngredient,
-  useKnownIngredients,
 } from "../../data/useKnownIngredients";
 import { MentionNodeAttrs } from "@tiptap/extension-mention";
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from "react";
+import { forwardRef, useImperativeHandle, useMemo } from "react";
 import { IngredientRef } from "../../data/models";
 import { searchIngredients } from "../../data/search-ingredients";
 import { useEditorIngredients } from "./useEditorIngredients";

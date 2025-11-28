@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useResettableState } from "../../utils/useResettableState";
 
 type Props = {

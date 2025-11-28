@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ModalContentProps } from "../modal/useModal";
-import { Slider } from "../ui/Slider";
+import { ModalContentProps } from "../../components/modal/useModal";
+import { Slider } from "../../components/ui/Slider";
 
 type Props = ModalContentProps<{ portions: number }, { portions: number }>;
 export const ChangePortionsModal = ({ portions, cancel, close }: Props) => {

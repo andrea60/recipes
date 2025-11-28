@@ -1,5 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { RecipeMode, RecipePage, RecipeView } from "../../pages/RecipePage";
+import {
+  RecipeMode,
+  RecipePage,
+  RecipeView,
+} from "../../features/recipe-editor/RecipePage";
 
 type RecipeRouteSearchParams = {
   mode?: RecipeMode;

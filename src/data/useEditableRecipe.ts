@@ -1,12 +1,10 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useDoc } from "../firebase/queries/useDoc";
-import { useResettableState } from "../utils/useResettableState";
 import { useAsyncAction } from "../firebase/useAsyncAction";
 import { Recipe } from "./models";
 import { imageRef, recipesCollection } from "../firebase/firebase-references";
 import { FileDef } from "./useCreateRecipe";
 import { uploadBytes } from "firebase/storage";
-import { create } from "zustand";
 import { atom, useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
 

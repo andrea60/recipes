@@ -1,4 +1,4 @@
-import { RecipeEditor } from "../components/editor/RecipeEditor";
+import { RecipeEditor } from "./RecipeEditor";
 import { Provider } from "jotai";
 import { useCallback, useState } from "react";
 import {
@@ -11,15 +11,15 @@ import {
   UsersThreeIcon,
 } from "@phosphor-icons/react";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { RecipeNameEditor } from "../components/editor/RecipeNameEditor";
-import { IngredientRef, Recipe } from "../data/models";
+import { RecipeNameEditor } from "./RecipeNameEditor";
+import { IngredientRef, Recipe } from "../../data/models";
 import debounce from "lodash.debounce";
-import { useModal } from "../components/modal/useModal";
-import { EditRecipeModal } from "../components/editor/EditRecipeModal";
-import { useEditableRecipe } from "../data/useEditableRecipe";
-import { FileDef } from "../data/useCreateRecipe";
-import { ChangePortionsModal } from "../components/editor/ChangePortionsModal";
-import { IngredientsList } from "../components/editor/IngredientsList";
+import { useModal } from "../../components/modal/useModal";
+import { EditRecipeModal } from "./EditRecipeModal";
+import { useEditableRecipe } from "../../data/useEditableRecipe";
+import { FileDef } from "../../data/useCreateRecipe";
+import { ChangePortionsModal } from "./ChangePortionsModal";
+import { IngredientsList } from "./IngredientsList";
 import classNames from "classnames";
 
 export type RecipeMode = "edit" | "cook";
@@ -54,15 +54,15 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   const { openModal } = useModal();
 
   const setMode = (mode: RecipeMode) => {
-    navigate({ to: ".", search: { mode, view } });
+    navigate({ to: ".", search: (prev) => ({ ...prev, mode }) });
   };
 
   const setView = (view: RecipeView) => {
-    navigate({ to: ".", search: { mode, view } });
+    navigate({ to: ".", search: (prev) => ({ ...prev, view }) });
   };
 
   const toggleMode = () => {
-    if (mode == "edit") {
+    if (mode === "edit") {
       setMode("cook");
     } else {
       setMode("edit");
@@ -110,6 +110,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
 
   const quantityMultiplier = cookPortions / recipe.portions;
 
+  console.log({ mode });
   return (
     <Provider>
       <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
@@ -120,7 +121,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
         />
       </div>
       <div className="flex justify-center">
-        <div className="tabs tabs-sm tabs-box bg-base-300 mb-2 inline-flex">
+        <div className="tabs tabs-sm flex-nowrap tabs-box bg-base-300 mb-2 inline-flex">
           <button
             disabled={mode === "edit"}
             className={classNames("tab flex gap-2 w-44", {
