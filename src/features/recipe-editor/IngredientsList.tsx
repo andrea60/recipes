@@ -14,7 +14,7 @@ export const IngredientsList = ({ ingredients, quantityMultiplier }: Props) => {
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0 items-center">
           {ingredients.map((i) => (
             <>
-              <div key={i.id + "-qnt"}>
+              <div key={i.id + "-qnt"} className="font-bold text-primary">
                 <DotIcon className="inline mr-1" weight="fill" fontSize={18} />
                 {i.quantity * quantityMultiplier} {i.unit}
               </div>
