@@ -77,7 +77,7 @@ export const Tabs = ({ tabs, selectedId, onTabChange, maxWidth }: Props) => {
       </div>
 
       {selectedTab && (
-        <AnimatePresence mode="popLayout" custom={direction}>
+        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
           <motion.div
             key={selectedTab.id}
             custom={direction}

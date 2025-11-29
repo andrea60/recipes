@@ -20,8 +20,6 @@ import { useEditableRecipe } from "../../data/useEditableRecipe";
 import { FileDef } from "../../data/useCreateRecipe";
 import { ChangePortionsModal } from "./ChangePortionsModal";
 import { IngredientsList } from "./IngredientsList";
-import classNames from "classnames";
-import { AnimatePresence, motion } from "motion/react";
 import { Tabs } from "../../components/tab/Tabs";
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
