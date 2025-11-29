@@ -5,6 +5,7 @@ import {
   GoogleAuthProvider,
   signOut,
   User,
+  signInWithRedirect,
 } from "firebase/auth";
 import { auth } from "../firebase/firebase.config";
 import { useNavigate } from "@tanstack/react-router";

@@ -29,8 +29,8 @@ export const EditRecipeModal = ({ close, cancel, ...recipe }: ModalProps) => {
 
   return (
     <>
-      <div className="flex gap-2">
-        <fieldset className="fieldset ">
+      <div className="flex gap-2 flex-wrap">
+        <fieldset className="fieldset grow">
           <legend className="fieldset-legend">How many portions?</legend>
           <input
             type="number"
@@ -41,7 +41,7 @@ export const EditRecipeModal = ({ close, cancel, ...recipe }: ModalProps) => {
             autoFocus
           />
         </fieldset>
-        <fieldset className="fieldset">
+        <fieldset className="fieldset grow">
           <legend className="fieldset-legend">Picture</legend>
           <FileInput onChange={setImage} />
         </fieldset>

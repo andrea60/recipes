@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { auth } from "../firebase/firebase.config";
 import { useAuth } from "../auth/useAuth";
+import { GoogleLogoIcon } from "@phosphor-icons/react";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -32,7 +33,7 @@ function RouteComponent() {
       <div className="card card-border card-sm w-full mt-6 shadow-xs">
         <div className="card-body">
           <h1 className="card-title self-center mb-2">Welcome Back!</h1>
-          <button className="btn btn-neutral" onClick={handleSignIn}>
+          <button className="btn btn-primary" onClick={handleSignIn}>
             Sign-in using Google
           </button>
         </div>

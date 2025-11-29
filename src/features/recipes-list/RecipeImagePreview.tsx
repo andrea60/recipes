@@ -10,7 +10,7 @@ export const RecipesImagePreview = ({ recipe, size }: Props) => {
 
   return (
     <div
-      className="bg-center bg-no-repeat bg-cover rounded-2xl"
+      className="bg-center bg-no-repeat bg-cover rounded-2xl shadow-md shadow-black"
       style={{
         width: size,
         height: size,

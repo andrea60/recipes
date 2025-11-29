@@ -11,13 +11,14 @@ import { useAuth } from "../../auth/useAuth";
 import { Avatar } from "../../components/Avatar";
 import { CreateRecipeModal } from "./CreateRecipeModal";
 import { RecipeCard } from "./RecipeCard";
+import { LogoutModal } from "./LogoutModal";
 
 export const RecipesListPage = () => {
   const recipes = useRecipes();
   const navigate = useNavigate();
   const { openModal } = useModal();
   const createRecipeAction = useCreateRecipe();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const handleCreate = async () => {
     // Open modal to create a new recipe
@@ -37,13 +38,30 @@ export const RecipesListPage = () => {
     navigate({ to: "/recipes/$id", params: { id } });
   };
 
+  const handleLogout = async () => {
+    const { reason } = await openModal({
+      component: LogoutModal,
+      componentProps: {},
+      mode: "dialog",
+      title: "Would you like to log out?",
+    });
+
+    if (reason === "complete") {
+      // Perform logout
+      await signOut();
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-row mb-4">
-        <div className="grow flex items-center gap-2">
+      <div className="flex flex-row mb-4 justify-between">
+        <button
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={handleLogout}
+        >
           <Avatar photoUrl={user?.photoURL || ""} />
           <h1>Welcome {getFirstName(user?.displayName ?? "")}</h1>
-        </div>
+        </button>
         <button className="btn btn-outline btn-circle" onClick={handleCreate}>
           <PlusCircleIcon size="24" weight="fill" />
         </button>
