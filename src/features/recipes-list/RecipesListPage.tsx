@@ -41,8 +41,8 @@ export const RecipesListPage = () => {
     <>
       <div className="flex flex-row mb-4">
         <div className="grow flex items-center gap-2">
-          <Avatar photoUrl={user?.displayName || ""} />
-          <h1>Welcome {user?.displayName}</h1>
+          <Avatar photoUrl={user?.photoURL || ""} />
+          <h1>Welcome {getFirstName(user?.displayName ?? "")}</h1>
         </div>
         <button className="btn btn-outline btn-circle" onClick={handleCreate}>
           <PlusCircleIcon size="24" weight="fill" />
@@ -67,4 +67,9 @@ export const RecipesListPage = () => {
       </div>
     </>
   );
+};
+
+const getFirstName = (fullName: string | undefined) => {
+  if (!fullName) return "";
+  return fullName.split(" ")[0];
 };

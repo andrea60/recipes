@@ -1,11 +1,13 @@
 type Props = {
   photoUrl: string;
 };
-export const Avatar = ({}: Props) => {
+export const Avatar = ({ photoUrl }: Props) => {
   return (
-    <div className="avatar">
-      <div className="w-8 rounded">
-        <img src="https://img.daisyui.com/images/profile/demo/superperson@192.webp" />
+    <div className="p-1.5 bg-base-100 rounded-md shadow-sm shadow-black">
+      <div className="avatar">
+        <div className="w-8 rounded">
+          <img src={photoUrl} />
+        </div>
       </div>
     </div>
   );
