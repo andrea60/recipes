@@ -1,21 +1,35 @@
+import classNames from "classnames";
 import { Recipe } from "../../data/models";
 import { useFirebaseDownloadUrl } from "../../firebase/useFirebaseDownloadUrl";
+import { useRef, useState } from "react";
 
 type Props = {
   recipe: Recipe;
-  size: number;
+  aspectRatio: string;
 };
-export const RecipesImagePreview = ({ recipe, size }: Props) => {
+export const RecipesImagePreview = ({ recipe, aspectRatio }: Props) => {
   const url = useFirebaseDownloadUrl(recipe.imagePath);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [imageReady, setImageReady] = useState(false);
+
+  const onImageLoaded = () => {
+    setImageReady(true);
+  };
 
   return (
     <div
-      className="bg-center bg-no-repeat bg-cover rounded-2xl shadow-md shadow-black"
+      ref={containerRef}
+      className={classNames(
+        "rounded-2xl shadow-md shadow-black",
+        imageReady ? "bg-center bg-no-repeat bg-cover" : "skeleton"
+      )}
       style={{
-        width: size,
-        height: size,
-        backgroundImage: `url(${url})`,
+        width: "100%",
+        aspectRatio: aspectRatio,
+        backgroundImage: imageReady ? `url(${url})` : undefined,
       }}
-    ></div>
+    >
+      <img src={url} className="hidden" onLoad={onImageLoaded} />
+    </div>
   );
 };

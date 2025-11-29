@@ -12,6 +12,8 @@ import { Avatar } from "../../components/Avatar";
 import { CreateRecipeModal } from "./CreateRecipeModal";
 import { RecipeCard } from "./RecipeCard";
 import { LogoutModal } from "./LogoutModal";
+import classNames from "classnames";
+import { MasonryGrid } from "../../components/ui/Masonry";
 
 export const RecipesListPage = () => {
   const recipes = useRecipes();
@@ -78,11 +80,7 @@ export const RecipesListPage = () => {
         </label>
       </div>
       <h1 className="text-3xl font-bold mb-4">Recipes</h1>
-      <div className="flex flex-wrap gap-8 cursor-pointer">
-        {recipes.data?.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
-        ))}
-      </div>
+      <MasonryGrid elements={recipes.data ?? []}></MasonryGrid>
     </>
   );
 };
