@@ -22,6 +22,7 @@ import { ChangePortionsModal } from "./ChangePortionsModal";
 import { IngredientsList } from "./IngredientsList";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "motion/react";
+import { Tabs } from "../../components/tab/Tabs";
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
 
@@ -120,61 +121,43 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
           readonly={mode === "cook"}
         />
       </div>
-      <div className="flex justify-center">
-        <div className="tabs tabs-sm flex-nowrap tabs-box bg-base-300 mb-2 inline-flex">
-          <button
-            disabled={mode === "edit"}
-            className={classNames("tab flex gap-2 w-44", {
-              "bg-base-200 tab-active": view === "recipe",
-            })}
-            onClick={() => setView("recipe")}
-          >
-            <CookingPotIcon weight="fill" /> Cooking Steps
-          </button>
-          <button
-            className={classNames("tab flex gap-2 w-44", {
-              "bg-base-200 tab-active": view === "ingredients",
-            })}
-            disabled={mode === "edit"}
-            onClick={() => setView("ingredients")}
-          >
-            <BasketIcon weight="fill" /> Ingredients
-          </button>
-        </div>
-      </div>
-
-      <AnimatePresence mode="popLayout">
-        {mode === "cook" && view === "ingredients" && (
-          <motion.div
-            key="ingredients"
-            initial={{ opacity: 0, x: -100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{}}
-          >
-            <IngredientsList
-              ingredients={recipe.ingredients}
-              quantityMultiplier={quantityMultiplier}
-            />
-          </motion.div>
-        )}
-
-        {mode === "edit" || view === "recipe" ? (
-          <motion.div
-            key="recipe"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 100 }}
-          >
-            <RecipeEditor
-              initialContent={recipe.content}
-              onChange={handleContentChanged}
-              quantityMultiplier={quantityMultiplier}
-              readonly={mode === "cook"}
-            />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      <Tabs
+        maxWidth={384}
+        onTabChange={(id) => setView(id as RecipeView)}
+        selectedId={view}
+        tabs={[
+          {
+            id: "recipe",
+            header: (
+              <>
+                <CookingPotIcon weight="fill" /> Cooking Steps
+              </>
+            ),
+            content: (
+              <RecipeEditor
+                initialContent={recipe.content}
+                onChange={handleContentChanged}
+                quantityMultiplier={quantityMultiplier}
+                readonly={mode === "cook"}
+              />
+            ),
+          },
+          {
+            id: "ingredients",
+            header: (
+              <>
+                <BasketIcon weight="fill" /> Ingredients
+              </>
+            ),
+            content: (
+              <IngredientsList
+                ingredients={recipe.ingredients}
+                quantityMultiplier={quantityMultiplier}
+              />
+            ),
+          },
+        ]}
+      />
 
       <div className="fixed bottom-0 left-0 p-4 flex w-full justify-between items-center">
         <button
