@@ -7,8 +7,6 @@ type Props = {
 };
 export const MasonryGrid = ({ elements }: Props) => {
   const children = [];
-  let large = false;
-  let shift = true;
   let idx = 0;
   for (const el of elements) {
     const isNewRow = idx % 2 === 0 && idx > 0;
