@@ -21,6 +21,7 @@ import { FileDef } from "../../data/useCreateRecipe";
 import { ChangePortionsModal } from "./ChangePortionsModal";
 import { IngredientsList } from "./IngredientsList";
 import { Tabs } from "../../components/tab/Tabs";
+import { FirebaseImage } from "../../firebase/components/FirebaseImage";
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
 
@@ -112,6 +113,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   console.log({ mode });
   return (
     <Provider>
+      <FirebaseImage firebasePath={recipe.imagePath} />
       <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
         <RecipeNameEditor
           name={recipe.name}
