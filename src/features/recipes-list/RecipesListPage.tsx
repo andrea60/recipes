@@ -61,8 +61,8 @@ export const RecipesListPage = () => {
   return (
     <>
       <div
-        className={classNames("fixed w-100 top-0  p-4 pb-1 rounded-b-4xl", {
-          "shadow-sm shadow-black glass-bg-3 bg-base-200": isScrolling,
+        className={classNames("fixed w-full top-0  p-4 pb-1 rounded-b-4xl", {
+          "shadow-sm shadow-black glass-bg-3": isScrolling,
         })}
       >
         <div className="flex flex-row mb-4 justify-between">
@@ -90,10 +90,8 @@ export const RecipesListPage = () => {
         </div>
       </div>
       <div className="flex-1 p-4 pt-36 overflow-y-auto" ref={contentRef}>
-        <div className="">
-          <h1 className="text-3xl font-bold mb-4">Recipes</h1>
-          <MasonryGrid elements={recipes.data ?? []}></MasonryGrid>
-        </div>
+        <h1 className="text-3xl font-bold mb-4">Recipes</h1>
+        <MasonryGrid elements={recipes.data ?? []}></MasonryGrid>
       </div>
     </>
   );

@@ -9,7 +9,7 @@ export const useScrollState = (ref: React.RefObject<HTMLElement | null>) => {
 
     const handler = () => {
       if (!ref.current) return;
-      setIsAtTop(ref.current.scrollTop === 0);
+      setIsAtTop(ref.current.scrollTop <= 0);
     };
     handler();
 
