@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const useScrollState = (ref: React.RefObject<HTMLElement | null>) => {
-  const [isAtTop, setIsAtTop] = useState(true);
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -9,7 +9,7 @@ export const useScrollState = (ref: React.RefObject<HTMLElement | null>) => {
 
     const handler = () => {
       if (!ref.current) return;
-      setIsAtTop(ref.current.scrollTop <= 0);
+      setScrollOffset(ref.current.scrollTop);
     };
     handler();
 
@@ -20,5 +20,8 @@ export const useScrollState = (ref: React.RefObject<HTMLElement | null>) => {
     };
   }, [ref.current]);
 
-  return !isAtTop;
+  // negative values are possible due to bounce scrolling on mobile
+  const isAtTop = scrollOffset <= 0;
+
+  return { isAtTop, scrollOffset };
 };

@@ -24,7 +24,7 @@ export const RecipesListPage = () => {
   const { user, signOut } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const isScrolling = useScrollState(contentRef);
+  const { isAtTop } = useScrollState(contentRef);
 
   const handleCreate = async () => {
     // Open modal to create a new recipe
@@ -62,7 +62,7 @@ export const RecipesListPage = () => {
     <>
       <div
         className={classNames("fixed w-full top-0  p-4 pb-1 rounded-b-4xl", {
-          "shadow-sm shadow-black glass-bg-3": isScrolling,
+          "shadow-sm shadow-black glass-bg-3": !isAtTop,
         })}
       >
         <div className="flex flex-row mb-4 justify-between">
