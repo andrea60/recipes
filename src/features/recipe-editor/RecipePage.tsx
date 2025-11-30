@@ -67,16 +67,20 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   const [cookPortions, setCookPortions] = useState(recipe.portions);
   const { openModal } = useModal();
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress, scrollY } = useScroll({
+  const { scrollY } = useScroll({
     container: containerRef, // <-- track scroll inside this div
   });
+  const [isAnchored, setIsAnchored] = useState(false);
+
   const progress = useMotionValue(0);
 
   // Update progress based on scrollY
   useMotionValueEvent(scrollY, "change", (latest) => {
     const p = Math.min(latest / COLLAPSE_DISTANCE, 1);
     progress.set(p);
+    if (p >= 1) setIsAnchored(true);
+
+    if (p <= 0) setIsAnchored(false);
   });
 
   const height = useTransform(
@@ -163,7 +167,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
 
         {/* Page content */}
         <motion.div
-          className="p-4 h-screen rounded-t-box sticky bg-base-200"
+          className="p-4 h-screen rounded-t-box sticky bg-base-200 flex flex-col"
           style={{
             height: `calc(100vh - ${MIN_HEADER}px)`,
             marginTop: -HEADER_GUTTER,
@@ -180,6 +184,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
             maxWidth={384}
             onTabChange={(id) => setView(id as RecipeView)}
             selectedId={view}
+            enableScroll={isAnchored}
             tabs={[
               {
                 id: "recipe",

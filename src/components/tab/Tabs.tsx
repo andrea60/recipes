@@ -13,9 +13,16 @@ type Props = {
   selectedId: string;
   onTabChange: (id: string) => void;
   maxWidth?: number;
+  enableScroll?: boolean;
 };
 
-export const Tabs = ({ tabs, selectedId, onTabChange, maxWidth }: Props) => {
+export const Tabs = ({
+  tabs,
+  selectedId,
+  onTabChange,
+  maxWidth,
+  enableScroll,
+}: Props) => {
   const currentIdx = tabs.findIndex((tab) => tab.id === selectedId);
   const [prevIdx, setPrevIdx] = useState(0);
 
@@ -80,6 +87,7 @@ export const Tabs = ({ tabs, selectedId, onTabChange, maxWidth }: Props) => {
         <AnimatePresence mode="popLayout" custom={direction} initial={false}>
           <motion.div
             key={selectedTab.id}
+            className={classNames({ "overflow-y-scroll": enableScroll })}
             custom={direction}
             variants={variants}
             initial="enter"
