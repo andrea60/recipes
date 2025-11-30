@@ -52,6 +52,7 @@ export const RecipePage = () => {
 
 const MAX_HEADER = 280; // px
 const MIN_HEADER = 80; // px
+const HEADER_GUTTER = 25; // px
 const COLLAPSE_DISTANCE = 200; // px of scroll until fully collapsed
 
 type Props = {
@@ -75,11 +76,14 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   // Update progress based on scrollY
   useMotionValueEvent(scrollY, "change", (latest) => {
     const p = Math.min(latest / COLLAPSE_DISTANCE, 1);
-    console.log("scroll progress:", p);
     progress.set(p);
   });
 
-  const height = useTransform(progress, [0, 1], [MAX_HEADER, MIN_HEADER]);
+  const height = useTransform(
+    progress,
+    [0, 1],
+    [MAX_HEADER + HEADER_GUTTER, MIN_HEADER + HEADER_GUTTER]
+  );
 
   const setMode = (mode: RecipeMode) => {
     navigate({ to: ".", search: (prev) => ({ ...prev, mode }) });
@@ -143,8 +147,8 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
       <div className="h-screen overflow-y-auto" ref={containerRef}>
         {/* Header with image */}
         <motion.div
-          className="sticky top-0 z-20"
-          style={{ height: MAX_HEADER }}
+          className="sticky top-0"
+          style={{ height: MAX_HEADER + HEADER_GUTTER }}
         >
           <motion.div
             style={{ height: height }}
@@ -159,8 +163,11 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
 
         {/* Page content */}
         <motion.div
-          className="p-4 h-screen"
-          style={{ height: `calc(100vh - ${MIN_HEADER}px)` }}
+          className="p-4 h-screen rounded-t-box sticky bg-base-200"
+          style={{
+            height: `calc(100vh - ${MIN_HEADER}px)`,
+            marginTop: -HEADER_GUTTER,
+          }}
         >
           <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
             <RecipeNameEditor
