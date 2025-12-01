@@ -168,7 +168,6 @@ export const RecipeEditor = ({
         if (!transaction.docChanged || readonly) return;
         const json = editor.getJSON();
         const jsonString = JSON.stringify(json);
-        console.log("JSON:", editor.getJSON());
 
         if (jsonString === JSON.stringify(jsonContent)) return;
         // Parse all mentions from the editor
@@ -223,9 +222,13 @@ const convertRecipe = (
       ? getIngredientRef(content.attrs)
       : undefined;
     if (ingredient && newNode.attrs) {
+      const quantity = ingredient.quantity * multiplier;
+      const formatter = new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: 1,
+      });
       newNode.attrs = {
         ...newNode.attrs,
-        label: `${ingredient.quantity * multiplier}${ingredient.unit} ${ingredient.name}`,
+        label: `${formatter.format(quantity)}${ingredient.unit} ${ingredient.name}`,
       };
     }
   }

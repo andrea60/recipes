@@ -46,12 +46,33 @@ export type RecipeView = "recipe" | "ingredients";
 
 export const RecipePage = () => {
   const { id } = useParams({ from: "/recipes/$id" });
+  const { openModal } = useModal();
   const navigate = useNavigate();
+  const { mode = "cook" } = useSearch({
+    from: "/recipes/$id",
+  });
 
   const recipeDoc = useEditableRecipe(id);
 
   if (recipeDoc.pending) return <div>Loading</div>;
   if (!recipeDoc.found) return <div>Not found</div>;
+
+  const onActionClick = async () => {
+    if (mode === "edit") {
+      openSettings();
+    } else if (mode === "cook") {
+      // TODO: toggle favorite
+    }
+  };
+
+  const openSettings = () => {
+    openModal({
+      title: "Update Recipe",
+      component: EditRecipeModal,
+      componentProps: recipeDoc.data,
+      mode: "dialog",
+    });
+  };
 
   return (
     <CollapsibleHeaderLayout
@@ -63,8 +84,17 @@ export const RecipePage = () => {
           >
             <ArrowLeftIcon fontSize={20} weight="bold" />
           </button>
-          <button className="btn btn-circle btn-outline bg-base-200 shadow-lg shadow-black/25">
-            <HeartIcon fontSize={20} weight="regular" />
+
+          <button
+            onClick={onActionClick}
+            className={classNames(
+              "btn btn-circle btn-outline bg-base-200 shadow-lg shadow-black/25 swap swap-rotate",
+              { "swap-active": mode === "cook" }
+            )}
+          >
+            <HeartIcon className="swap-on" fontSize={20} weight="regular" />
+
+            <GearSixIcon className="swap-off" fontSize={20} weight="regular" />
           </button>
         </div>
       }
@@ -111,15 +141,6 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
       setMode("edit");
       setView("recipe");
     }
-  };
-
-  const openSettings = () => {
-    openModal({
-      title: "Update Recipe",
-      component: EditRecipeModal,
-      componentProps: recipe,
-      mode: "dialog",
-    });
   };
 
   const handleRename = useCallback(
@@ -205,7 +226,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
         ]}
       />
 
-      <div className="fixed bottom-0 left-0 p-8 flex w-full justify-end items-center">
+      <div className="fixed bottom-0 left-0 p-6 flex w-full justify-end items-center">
         <button
           className="btn btn-circle btn-outline btn-lg glass-bg"
           onClick={toggleMode}
