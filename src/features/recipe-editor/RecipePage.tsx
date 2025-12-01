@@ -40,6 +40,7 @@ import {
 } from "../../components/ui/CollapsibleHeaderLayout";
 import classNames from "classnames";
 import { PortionsQuantityControls } from "./PortionQuantityControls";
+import { useWakeLock } from "../../utils/useWakeLock";
 
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
@@ -51,6 +52,7 @@ export const RecipePage = () => {
   const { mode = "cook" } = useSearch({
     from: "/recipes/$id",
   });
+  useWakeLock(mode === "cook");
 
   const recipeDoc = useEditableRecipe(id);
 
@@ -81,26 +83,26 @@ export const RecipePage = () => {
       headerActionBar={
         <div className="w-full flex justify-between">
           <button
-            className="btn btn-circle btn-outline bg-base-200 shadow-lg shadow-black/25"
+            className="btn btn-circle btn-outline btn-lg bg-base-200 shadow-lg shadow-black/25"
             onClick={() => navigate({ to: ".." })}
           >
-            <ArrowLeftIcon fontSize={20} weight="bold" />
+            <ArrowLeftIcon size={24} weight="bold" />
           </button>
 
           <button
             onClick={onActionClick}
             className={classNames(
-              "btn btn-circle btn-outline bg-base-200 shadow-lg shadow-black/25 swap swap-rotate",
+              "btn btn-circle btn-outline bg-base-200 btn-lg shadow-lg shadow-black/25 swap swap-rotate",
               { "swap-active": mode === "cook" }
             )}
           >
             <HeartIcon
               className="swap-on"
-              fontSize={20}
+              size={24}
               weight={recipeDoc.data.isFavourite ? "fill" : "regular"}
             />
 
-            <GearSixIcon className="swap-off" fontSize={20} weight="regular" />
+            <GearSixIcon className="swap-off" size={24} weight="regular" />
           </button>
         </div>
       }
