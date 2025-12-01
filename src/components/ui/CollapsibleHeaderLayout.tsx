@@ -21,10 +21,15 @@ const Context = createContext<Context>({ isAnchored: false });
 
 type Props = {
   headerContent: React.ReactNode;
+  headerActionBar?: React.ReactNode;
   children: React.ReactNode;
 };
 
-export const CollapsibleHeaderLayout = ({ headerContent, children }: Props) => {
+export const CollapsibleHeaderLayout = ({
+  headerContent,
+  children,
+  headerActionBar,
+}: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll({
     container: containerRef, // <-- track scroll inside this div
@@ -67,8 +72,12 @@ export const CollapsibleHeaderLayout = ({ headerContent, children }: Props) => {
             style={{ height: height }}
             className="absolute top-0 w-full"
           >
+            <div className="absolute top-0 w-full h-full z-10 p-2">
+              {headerActionBar}
+            </div>
+            {/* Blur Filter */}
             <motion.div
-              className="absolute top-0 w-full h-full "
+              className="absolute top-0 w-full h-full"
               style={{ backdropFilter: blur }}
             />
             {headerContent}
@@ -76,7 +85,7 @@ export const CollapsibleHeaderLayout = ({ headerContent, children }: Props) => {
         </motion.div>
         {/* Content */}
         <motion.div
-          className="p-4 h-screen rounded-t-box sticky bg-base-200 flex flex-col shadow-[0_0px_11px_0px_rgb(0,0,0,120)]"
+          className="p-6 h-screen rounded-t-box sticky bg-base-200 flex flex-col shadow-[0_0px_11px_0px_rgb(0,0,0,120)]"
           style={{
             height: `calc(100vh - ${MIN_HEADER}px)`,
             marginTop: -HEADER_GUTTER,

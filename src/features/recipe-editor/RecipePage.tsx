@@ -7,7 +7,10 @@ import {
   ChefHatIcon,
   CookingPotIcon,
   GearSixIcon,
+  HeartIcon,
+  MinusIcon,
   PencilIcon,
+  PlusIcon,
   UsersThreeIcon,
 } from "@phosphor-icons/react";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
@@ -23,6 +26,7 @@ import { IngredientsList } from "./IngredientsList";
 import { Tabs } from "../../components/tab/Tabs";
 import { FirebaseImageDiv } from "../../firebase/components/FirebaseImageDiv";
 import {
+  AnimatePresence,
   useMotionValue,
   useMotionValueEvent,
   useScroll,
@@ -34,12 +38,15 @@ import {
   CollapsibleHeaderLayout,
   useCollapsibleHeaderState,
 } from "../../components/ui/CollapsibleHeaderLayout";
+import classNames from "classnames";
+import { PortionsQuantityControls } from "./PortionQuantityControls";
 
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
 
 export const RecipePage = () => {
   const { id } = useParams({ from: "/recipes/$id" });
+  const navigate = useNavigate();
 
   const recipeDoc = useEditableRecipe(id);
 
@@ -48,6 +55,19 @@ export const RecipePage = () => {
 
   return (
     <CollapsibleHeaderLayout
+      headerActionBar={
+        <div className="w-full flex justify-between">
+          <button
+            className="btn btn-circle btn-outline bg-base-200 shadow-lg shadow-black/25"
+            onClick={() => navigate({ to: ".." })}
+          >
+            <ArrowLeftIcon fontSize={20} weight="bold" />
+          </button>
+          <button className="btn btn-circle btn-outline bg-base-200 shadow-lg shadow-black/25">
+            <HeartIcon fontSize={20} weight="regular" />
+          </button>
+        </div>
+      }
       headerContent={
         <FirebaseImageDiv
           firebasePath={recipeDoc?.data?.imagePath ?? ""}
@@ -117,25 +137,23 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
     [onChange, mode]
   );
 
-  const handlePortionsButtonClick = async () => {
-    const { result, reason } = await openModal({
-      component: ChangePortionsModal,
-      title: "Change Cooking Portions",
-      componentProps: { portions: cookPortions },
-      fullWidth: true,
-      mode: "dialog",
-    });
-
-    if (reason !== "complete") return;
-
-    setCookPortions(result.portions);
-  };
-
   const quantityMultiplier = cookPortions / recipe.portions;
+
+  const displayPortions = mode === "cook" ? cookPortions : recipe.portions;
 
   return (
     <Provider>
-      <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
+      <div className="flex justify-center">
+        <AnimatePresence>
+          {mode === "cook" && (
+            <PortionsQuantityControls
+              onChange={setCookPortions}
+              portions={cookPortions}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+      <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2 pt-2">
         <RecipeNameEditor
           name={recipe.name}
           onChange={handleRename}
@@ -144,6 +162,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
       </div>
       <Tabs
         maxWidth={384}
+        disabled={mode !== "cook"}
         onTabChange={(id) => setView(id as RecipeView)}
         selectedId={view}
         enableScroll={isAnchored}
@@ -156,12 +175,17 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
               </>
             ),
             content: (
-              <RecipeEditor
-                initialContent={recipe.content}
-                onChange={handleContentChanged}
-                quantityMultiplier={quantityMultiplier}
-                readonly={mode === "cook"}
-              />
+              <>
+                <h1 className="my-4 text-2xl font-bold">
+                  Instructions for {displayPortions} portions:
+                </h1>
+                <RecipeEditor
+                  initialContent={recipe.content}
+                  onChange={handleContentChanged}
+                  quantityMultiplier={quantityMultiplier}
+                  readonly={mode === "cook"}
+                />
+              </>
             ),
           },
           {
@@ -181,41 +205,24 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
         ]}
       />
 
-      <div className="fixed bottom-0 left-0 p-4 flex w-full justify-between items-center">
+      <div className="fixed bottom-0 left-0 p-8 flex w-full justify-end items-center">
         <button
-          className="btn btn-circle btn-outline glass-bg shadow-md"
-          onClick={() => navigate({ to: ".." })}
+          className="btn btn-circle btn-outline btn-lg glass-bg"
+          onClick={toggleMode}
         >
-          <ArrowLeftIcon weight="regular" size={20} />
-        </button>
-
-        <div className="flex gap-2">
-          {mode === "cook" && (
-            <button
-              className="btn btn-sm btn-outline glass-bg shadow-md"
-              onClick={handlePortionsButtonClick}
-            >
-              <UsersThreeIcon size="20" weight="bold" /> {cookPortions} Portions
-            </button>
-          )}
-          {mode === "edit" && (
-            <button
-              className="btn btn-sm btn-circle btn-outline glass-bg shadow-md"
-              onClick={openSettings}
-            >
-              <GearSixIcon size="20" weight="fill" />
-            </button>
-          )}
-          <label className="toggle text-base-content toggle-xl">
-            <input
-              type="checkbox"
-              onChange={toggleMode}
-              checked={mode === "edit"}
-            />
-            <ChefHatIcon aria-label="disabled" size="inherit" weight="fill" />
-            <PencilIcon aria-label="enabled" size="inherit" weight="fill" />
+          <label
+            className={classNames("swap text-2xl", {
+              "swap-active": mode === "cook",
+            })}
+          >
+            <div className="swap-on">
+              <ChefHatIcon weight="fill" />
+            </div>
+            <div className="swap-off">
+              <PencilIcon weight="fill" />
+            </div>
           </label>
-        </div>
+        </button>
       </div>
     </Provider>
   );

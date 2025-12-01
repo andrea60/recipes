@@ -9,7 +9,7 @@ type Props = {
 export const IngredientsList = ({ ingredients, quantityMultiplier }: Props) => {
   return (
     <>
-      <h1 className="mb-2">Ingredients you need to cook this recipe:</h1>
+      <h1 className="my-4 text-2xl font-bold">Things you need</h1>
       <div className="transition-all">
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0 items-center">
           {ingredients.map((i) => (
