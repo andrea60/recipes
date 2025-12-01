@@ -30,6 +30,10 @@ import {
   useTransform,
 } from "motion/react";
 import { motion } from "motion/react";
+import {
+  CollapsibleHeaderLayout,
+  useCollapsibleHeaderState,
+} from "../../components/ui/CollapsibleHeaderLayout";
 
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
@@ -43,51 +47,34 @@ export const RecipePage = () => {
   if (!recipeDoc.found) return <div>Not found</div>;
 
   return (
-    <RecipePageContent
-      recipe={recipeDoc.data}
-      onChange={recipeDoc.updateAction.execute}
-    />
+    <CollapsibleHeaderLayout
+      headerContent={
+        <FirebaseImageDiv
+          firebasePath={recipeDoc?.data?.imagePath ?? ""}
+          className="bg-center bg-cover bg-no-repeat h-full w-full"
+        />
+      }
+    >
+      <RecipePageContent
+        recipe={recipeDoc.data}
+        onChange={recipeDoc.updateAction.execute}
+      />
+    </CollapsibleHeaderLayout>
   );
 };
-
-const MAX_HEADER = 280; // px
-const MIN_HEADER = 80; // px
-const HEADER_GUTTER = 25; // px
-const COLLAPSE_DISTANCE = 200; // px of scroll until fully collapsed
 
 type Props = {
   recipe: Recipe;
   onChange: (update: Partial<Recipe>, image?: FileDef) => void;
 };
 const RecipePageContent = ({ recipe, onChange }: Props) => {
+  const { isAnchored } = useCollapsibleHeaderState();
   const navigate = useNavigate();
   const { mode = "cook", view = "recipe" } = useSearch({
     from: "/recipes/$id",
   });
   const [cookPortions, setCookPortions] = useState(recipe.portions);
   const { openModal } = useModal();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll({
-    container: containerRef, // <-- track scroll inside this div
-  });
-  const [isAnchored, setIsAnchored] = useState(false);
-
-  const progress = useMotionValue(0);
-
-  // Update progress based on scrollY
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const p = Math.min(latest / COLLAPSE_DISTANCE, 1);
-    progress.set(p);
-    if (p >= 1) setIsAnchored(true);
-
-    if (p <= 0) setIsAnchored(false);
-  });
-
-  const height = useTransform(
-    progress,
-    [0, 1],
-    [MAX_HEADER + HEADER_GUTTER, MIN_HEADER + HEADER_GUTTER]
-  );
 
   const setMode = (mode: RecipeMode) => {
     navigate({ to: ".", search: (prev) => ({ ...prev, mode }) });
@@ -148,119 +135,87 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
 
   return (
     <Provider>
-      <div className="h-screen overflow-y-auto" ref={containerRef}>
-        {/* Header with image */}
-        <motion.div
-          className="sticky top-0"
-          style={{ height: MAX_HEADER + HEADER_GUTTER }}
-        >
-          <motion.div
-            style={{ height: height }}
-            className="absolute top-0 w-full"
-          >
-            <FirebaseImageDiv
-              firebasePath={recipe.imagePath}
-              className="bg-center bg-cover bg-no-repeat h-full w-full"
-            />
-          </motion.div>
-        </motion.div>
+      <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
+        <RecipeNameEditor
+          name={recipe.name}
+          onChange={handleRename}
+          readonly={mode === "cook"}
+        />
+      </div>
+      <Tabs
+        maxWidth={384}
+        onTabChange={(id) => setView(id as RecipeView)}
+        selectedId={view}
+        enableScroll={isAnchored}
+        tabs={[
+          {
+            id: "recipe",
+            header: (
+              <>
+                <CookingPotIcon weight="fill" /> Cooking Steps
+              </>
+            ),
+            content: (
+              <RecipeEditor
+                initialContent={recipe.content}
+                onChange={handleContentChanged}
+                quantityMultiplier={quantityMultiplier}
+                readonly={mode === "cook"}
+              />
+            ),
+          },
+          {
+            id: "ingredients",
+            header: (
+              <>
+                <BasketIcon weight="fill" /> Ingredients
+              </>
+            ),
+            content: (
+              <IngredientsList
+                ingredients={recipe.ingredients}
+                quantityMultiplier={quantityMultiplier}
+              />
+            ),
+          },
+        ]}
+      />
 
-        {/* Page content */}
-        <motion.div
-          className="p-4 h-screen rounded-t-box sticky bg-base-200 flex flex-col"
-          style={{
-            height: `calc(100vh - ${MIN_HEADER}px)`,
-            marginTop: -HEADER_GUTTER,
-          }}
+      <div className="fixed bottom-0 left-0 p-4 flex w-full justify-between items-center">
+        <button
+          className="btn btn-circle btn-outline glass-bg shadow-md"
+          onClick={() => navigate({ to: ".." })}
         >
-          <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2">
-            <RecipeNameEditor
-              name={recipe.name}
-              onChange={handleRename}
-              readonly={mode === "cook"}
-            />
-          </div>
-          <Tabs
-            maxWidth={384}
-            onTabChange={(id) => setView(id as RecipeView)}
-            selectedId={view}
-            enableScroll={isAnchored}
-            tabs={[
-              {
-                id: "recipe",
-                header: (
-                  <>
-                    <CookingPotIcon weight="fill" /> Cooking Steps
-                  </>
-                ),
-                content: (
-                  <RecipeEditor
-                    initialContent={recipe.content}
-                    onChange={handleContentChanged}
-                    quantityMultiplier={quantityMultiplier}
-                    readonly={mode === "cook"}
-                  />
-                ),
-              },
-              {
-                id: "ingredients",
-                header: (
-                  <>
-                    <BasketIcon weight="fill" /> Ingredients
-                  </>
-                ),
-                content: (
-                  <IngredientsList
-                    ingredients={recipe.ingredients}
-                    quantityMultiplier={quantityMultiplier}
-                  />
-                ),
-              },
-            ]}
-          />
+          <ArrowLeftIcon weight="regular" size={20} />
+        </button>
 
-          <div className="fixed bottom-0 left-0 p-4 flex w-full justify-between items-center">
+        <div className="flex gap-2">
+          {mode === "cook" && (
             <button
-              className="btn btn-circle btn-outline glass-bg shadow-md"
-              onClick={() => navigate({ to: ".." })}
+              className="btn btn-sm btn-outline glass-bg shadow-md"
+              onClick={handlePortionsButtonClick}
             >
-              <ArrowLeftIcon weight="regular" size={20} />
+              <UsersThreeIcon size="20" weight="bold" /> {cookPortions} Portions
             </button>
-
-            <div className="flex gap-2">
-              {mode === "cook" && (
-                <button
-                  className="btn btn-sm btn-outline glass-bg shadow-md"
-                  onClick={handlePortionsButtonClick}
-                >
-                  <UsersThreeIcon size="20" weight="bold" /> {cookPortions}{" "}
-                  Portions
-                </button>
-              )}
-              {mode === "edit" && (
-                <button
-                  className="btn btn-sm btn-circle btn-outline glass-bg shadow-md"
-                  onClick={openSettings}
-                >
-                  <GearSixIcon size="20" weight="fill" />
-                </button>
-              )}
-              <label className="toggle text-base-content toggle-xl">
-                <input
-                  type="checkbox"
-                  onChange={toggleMode}
-                  checked={mode === "edit"}
-                />
-                <ChefHatIcon
-                  aria-label="disabled"
-                  size="inherit"
-                  weight="fill"
-                />
-                <PencilIcon aria-label="enabled" size="inherit" weight="fill" />
-              </label>
-            </div>
-          </div>
-        </motion.div>
+          )}
+          {mode === "edit" && (
+            <button
+              className="btn btn-sm btn-circle btn-outline glass-bg shadow-md"
+              onClick={openSettings}
+            >
+              <GearSixIcon size="20" weight="fill" />
+            </button>
+          )}
+          <label className="toggle text-base-content toggle-xl">
+            <input
+              type="checkbox"
+              onChange={toggleMode}
+              checked={mode === "edit"}
+            />
+            <ChefHatIcon aria-label="disabled" size="inherit" weight="fill" />
+            <PencilIcon aria-label="enabled" size="inherit" weight="fill" />
+          </label>
+        </div>
       </div>
     </Provider>
   );

@@ -41,6 +41,20 @@ body, html, #root {
   animation: fadeIn ease-in-out .15s;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scroll-no-bounce {
+  scroll-behavior: contain;
+   /* disables momentum + bounce on iOS */
+  -webkit-overflow-scrolling: auto;      
+}
+
 
 @keyframes fadeIn {
   0% {
