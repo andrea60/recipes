@@ -17,4 +17,5 @@ export type Recipe = {
   portions: number;
   imagePath: string;
   ingredients: IngredientRef[];
+  isFavourite: boolean;
 };

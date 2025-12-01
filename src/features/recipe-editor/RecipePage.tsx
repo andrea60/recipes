@@ -61,7 +61,9 @@ export const RecipePage = () => {
     if (mode === "edit") {
       openSettings();
     } else if (mode === "cook") {
-      // TODO: toggle favorite
+      recipeDoc.updateAction.execute({
+        isFavourite: !recipeDoc.data.isFavourite,
+      });
     }
   };
 
@@ -92,7 +94,11 @@ export const RecipePage = () => {
               { "swap-active": mode === "cook" }
             )}
           >
-            <HeartIcon className="swap-on" fontSize={20} weight="regular" />
+            <HeartIcon
+              className="swap-on"
+              fontSize={20}
+              weight={recipeDoc.data.isFavourite ? "fill" : "regular"}
+            />
 
             <GearSixIcon className="swap-off" fontSize={20} weight="regular" />
           </button>
@@ -124,7 +130,6 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
     from: "/recipes/$id",
   });
   const [cookPortions, setCookPortions] = useState(recipe.portions);
-  const { openModal } = useModal();
 
   const setMode = (mode: RecipeMode) => {
     navigate({ to: ".", search: (prev) => ({ ...prev, mode }) });
@@ -227,8 +232,9 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
       />
 
       <div className="fixed bottom-0 left-0 p-6 flex w-full justify-end items-center">
-        <button
+        <motion.button
           className="btn btn-circle btn-outline btn-lg glass-bg"
+          whileTap={{ scale: 0.7 }}
           onClick={toggleMode}
         >
           <label
@@ -243,7 +249,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
               <PencilIcon weight="fill" />
             </div>
           </label>
-        </button>
+        </motion.button>
       </div>
     </Provider>
   );

@@ -61,9 +61,12 @@ export const RecipesListPage = () => {
   return (
     <>
       <div
-        className={classNames("fixed w-full top-0  p-4 pb-1 rounded-b-4xl", {
-          "shadow-sm shadow-black glass-bg-3": !isAtTop,
-        })}
+        className={classNames(
+          "fixed w-full top-0  p-4 pb-1 rounded-b-4xl z-10",
+          {
+            "shadow-sm shadow-black glass-bg-3": !isAtTop,
+          }
+        )}
       >
         <div className="flex flex-row mb-4 justify-between">
           <button
@@ -91,7 +94,7 @@ export const RecipesListPage = () => {
       </div>
       <div className="flex-1 p-4 pt-36 overflow-y-auto" ref={contentRef}>
         <h1 className="text-3xl font-bold mb-4">Recipes</h1>
-        <MasonryGrid elements={recipes.data ?? []}></MasonryGrid>
+        <MasonryGrid elements={recipes.data ?? []} />
       </div>
     </>
   );

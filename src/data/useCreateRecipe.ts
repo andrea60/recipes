@@ -28,6 +28,7 @@ export const useCreateRecipe = () => {
       portions,
       imagePath: ref.fullPath,
       content: "",
+      isFavourite: false,
     });
     return id;
   };
