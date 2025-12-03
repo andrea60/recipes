@@ -11,5 +11,9 @@ export const VibrateActuator = () => {
 /** This function is a HACK! */
 export const vibrate = () => {
   const el = document.getElementById("vibrate");
-  el?.click();
+  if (!el) {
+    alert("Vibration Element not found!!");
+    return;
+  }
+  el.click();
 };

@@ -24,6 +24,7 @@ type Option = {
   name: string;
   id: string;
 };
+const WIDTH = 200;
 
 export const IngredientSelectorPopover = forwardRef<
   IngredientsPopoverElement,
@@ -104,13 +105,19 @@ export const IngredientSelectorPopover = forwardRef<
       );
     else content = <div>Loading...</div>;
   }
+  let posLeft = position.left;
+  if (posLeft + WIDTH > window.screen.width) {
+    // prevent overflowing
+    posLeft = window.screen.width - WIDTH;
+  }
 
   return (
     <div
-      className="absolute bg-base-100 rounded-2xl shadow-md p-2"
+      className="fixed bg-base-100 rounded-2xl shadow-md p-2 shadow-black/50"
       style={{
-        left: position.left + position.width,
+        left: posLeft,
         top: position.top + position.height,
+        width: WIDTH,
       }}
     >
       <div className="card card-sm">
