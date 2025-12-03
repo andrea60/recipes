@@ -3,14 +3,13 @@ import {
   RecipeMode,
   RecipePage,
   RecipeView,
-} from "../../features/recipe-editor/RecipePage";
-
+} from "../../../features/recipe-editor/RecipePage";
 type RecipeRouteSearchParams = {
   mode?: RecipeMode;
   view?: RecipeView;
 };
 
-export const Route = createFileRoute("/recipes/$id")({
+export const Route = createFileRoute("/recipes/$id/")({
   component: RecipePage,
   validateSearch: (search) =>
     ({

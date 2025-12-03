@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { match } from "ts-pattern";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XIcon } from "@phosphor-icons/react";
 
 type Toast = {
   id: string;
@@ -118,11 +118,7 @@ const Toast = (toast: ToastProps) => {
         ) : null}
         <p className="text-xs">{toast.content}</p>
       </div>
-      <XMarkIcon
-        className="size-4 mr-2"
-        role="button"
-        onClick={toast.onDismiss}
-      ></XMarkIcon>
+      <XIcon className="size-4 mr-2" role="button" onClick={toast.onDismiss} />
     </motion.div>
   );
 };

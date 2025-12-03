@@ -2,7 +2,7 @@ export const VibrateActuator = () => {
   return (
     <div className="hidden">
       {/* @ts-ignore */}
-      <input type="checkbox" id="vibrate-input" switch />
+      <input type="checkbox" id="vibrate-input" switch="true" />
       <label htmlFor="vibrate-input" id="vibrate" />
     </div>
   );

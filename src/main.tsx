@@ -13,6 +13,19 @@ const router = createRouter({
   context: {
     pageTitle: "",
   },
+  defaultViewTransition: {
+    types: ({ fromLocation, toLocation }) => {
+      let direction = "none";
+      if (fromLocation && fromLocation.pathname !== toLocation.pathname) {
+        if (toLocation.pathname.startsWith(fromLocation.pathname))
+          direction = "left";
+        else if (fromLocation.pathname.startsWith(toLocation.pathname))
+          direction = "right";
+      }
+
+      return [`slide-${direction}`];
+    },
+  },
 });
 
 // Register the router instance for type safety

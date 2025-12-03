@@ -52,7 +52,6 @@ export const IngredientSelectorPopover = forwardRef<
     () => ({
       onKeyDown: (event) => {
         if (event.key === "ArrowDown") {
-          console.log(searchResults.matching.length);
           setSelectedIdx((x) => (x >= options.length - 1 ? x : x + 1));
           return true;
         } else if (event.key === "ArrowUp") {
@@ -71,7 +70,6 @@ export const IngredientSelectorPopover = forwardRef<
   );
 
   const handleSelect = (ingredient: IngredientRef) => {
-    console.log("Ingredient selected", ingredient);
     onSelected({
       ...ingredient,
       label: `${ingredient.quantity}${ingredient.unit} ${ingredient.name}`,

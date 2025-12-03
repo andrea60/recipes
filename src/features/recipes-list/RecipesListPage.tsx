@@ -54,7 +54,7 @@ export const RecipesListPage = () => {
   };
 
   return (
-    <>
+    <div className="w-full h-full">
       <div
         className={classNames(
           "fixed w-full top-0  p-4 pb-1 rounded-b-4xl z-10",
@@ -91,7 +91,7 @@ export const RecipesListPage = () => {
         <h1 className="text-3xl font-bold mb-4">Recipes</h1>
         <MasonryGrid elements={recipes.data ?? []} />
       </div>
-    </>
+    </div>
   );
 };
 

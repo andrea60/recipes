@@ -47,10 +47,9 @@ export const useEditableRecipe = (id: string) => {
     });
   });
 
-  if (!recipe.found) return { pending: false, found: false } as const;
   if (recipe.pending || !localCopy) return { pending: true } as const;
+  if (!recipe.found) return { pending: false, found: false } as const;
 
-  console.log(localCopy);
   return {
     pending: false,
     found: true,

@@ -47,18 +47,31 @@ export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
 
 export const RecipePage = () => {
-  const { id } = useParams({ from: "/recipes/$id" });
+  const { id } = useParams({ from: "/recipes/$id/" });
   const { openModal } = useModal();
   const navigate = useNavigate();
   const { mode = "cook" } = useSearch({
-    from: "/recipes/$id",
+    from: "/recipes/$id/",
   });
   useWakeLock(mode === "cook");
 
   const recipeDoc = useEditableRecipe(id);
 
-  if (recipeDoc.pending) return <div>Loading</div>;
-  if (!recipeDoc.found) return <div>Not found</div>;
+  if (!recipeDoc.pending && !recipeDoc.found) {
+    console.log("REcipe not found", recipeDoc);
+    return <div>Not found</div>;
+  }
+
+  if (recipeDoc.pending) {
+    return (
+      <CollapsibleHeaderLayout headerContent={<></>}>
+        <h1 className="text-center">
+          <span className="loading loading-dots mr-2" />
+          Loading...
+        </h1>
+      </CollapsibleHeaderLayout>
+    );
+  }
 
   const onActionClick = async () => {
     if (mode === "edit") {
@@ -130,7 +143,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   const { isAnchored } = useCollapsibleHeaderState();
   const navigate = useNavigate();
   const { mode = "cook", view = "recipe" } = useSearch({
-    from: "/recipes/$id",
+    from: "/recipes/$id/",
   });
   const [cookPortions, setCookPortions] = useState(recipe.portions);
 

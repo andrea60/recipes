@@ -1,9 +1,9 @@
 import { Overlay } from "./Overlay";
 import { PropsWithChildren } from "react";
-import { XMarkIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 import { create } from "zustand";
 import classNames from "classnames";
+import { XIcon } from "@phosphor-icons/react";
 type ModalCloseReason = "cancel" | "complete";
 type OpenModalState<TResult = any, TProps = any> = {
   isOpen: true;
@@ -150,11 +150,7 @@ const DialogModalWrapper = (
         <h1 className="card-title flex justify-between">
           {props.title}
           {!!props.onCancel && (
-            <XMarkIcon
-              role="button"
-              onClick={props.onCancel}
-              className="size-4"
-            />
+            <XIcon role="button" onClick={props.onCancel} className="size-4" />
           )}
         </h1>
         {props.children}
