@@ -1,19 +1,32 @@
 import { useState } from "react";
 import { FileInput } from "../../components/FileInput";
 import { ModalContentProps } from "../../components/modal/useModal";
-import { FileDef } from "../../data/useCreateRecipe";
+import { FileDef, useCreateRecipe } from "../../data/useCreateRecipe";
+import {
+  CameraIcon,
+  ClipboardIcon,
+  SpinnerGapIcon,
+} from "@phosphor-icons/react";
+import { FileSelector } from "./FileSelector";
 
 type ModalProps = ModalContentProps<{
-  name: string;
-  portions: number;
-  image: FileDef;
+  id: string;
 }>;
 export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
   const [name, setName] = useState("");
   const [portions, setPortions] = useState(2);
   const [image, setImage] = useState<FileDef>();
+  const createRecipeAction = useCreateRecipe();
 
   const valid = name.trim().length > 0 && portions > 0 && !!image;
+  const create = async () => {
+    if (!valid) return;
+
+    const id = await createRecipeAction.execute(name, portions, image);
+
+    close({ id });
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 grid-rows-2 gap-2">
@@ -27,7 +40,6 @@ export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
             placeholder="Enter the name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            autoFocus
           />
         </fieldset>
         <fieldset className="fieldset ">
@@ -38,13 +50,9 @@ export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
             placeholder="Enter how many portions does this recipe make"
             value={portions}
             onChange={(e) => setPortions(e.target.valueAsNumber)}
-            autoFocus
           />
         </fieldset>
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">Picture</legend>
-          <FileInput onChange={setImage} />
-        </fieldset>
+        <FileSelector onChange={setImage} />
       </div>
       <div className="flex gap-2 mt-2">
         <button className="btn btn-neutral" onClick={cancel}>
@@ -52,10 +60,16 @@ export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
         </button>
         <button
           className="btn btn-primary grow"
-          disabled={!valid}
-          onClick={() => close({ name, portions, image: image! })}
+          disabled={!valid || createRecipeAction.inProgress}
+          onClick={create}
         >
-          Create
+          {createRecipeAction.inProgress ? (
+            <>
+              <span className="loading loading-ring loading-xs" /> Creating...
+            </>
+          ) : (
+            <>Create</>
+          )}
         </button>
       </div>
     </>

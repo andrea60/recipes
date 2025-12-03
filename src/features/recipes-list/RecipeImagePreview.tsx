@@ -20,8 +20,8 @@ export const RecipesImagePreview = ({ recipe, aspectRatio }: Props) => {
     <div
       ref={containerRef}
       className={classNames(
-        "rounded-2xl shadow-md shadow-black",
-        imageReady ? "bg-center bg-no-repeat bg-cover" : "skeleton"
+        "rounded-2xl shadow-md shadow-black ",
+        imageReady ? "bg-center bg-no-repeat bg-cover" : "skeleton opacity-60"
       )}
       style={{
         width: "100%",

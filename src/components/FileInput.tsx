@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { FileDef } from "../data/useCreateRecipe";
+import { getFileExtension } from "../utils/getFileExtension";
 
 type Props = {
   className?: string;
@@ -26,11 +27,4 @@ export const FileInput = ({ className, onChange }: Props) => {
       onChange={handleFileSelected}
     />
   );
-};
-
-const getFileExtension = (path: string) => {
-  const parts = path.split(".");
-  if (parts.length < 2) return undefined;
-
-  return parts[parts.length - 1];
 };

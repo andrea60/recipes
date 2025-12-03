@@ -20,7 +20,6 @@ export const RecipesListPage = () => {
   const recipes = useRecipes();
   const navigate = useNavigate();
   const { openModal } = useModal();
-  const createRecipeAction = useCreateRecipe();
   const { user, signOut } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -36,11 +35,7 @@ export const RecipesListPage = () => {
     });
     if (modalResult.reason !== "complete") return;
 
-    const id = await createRecipeAction.execute(
-      modalResult.result.name,
-      modalResult.result.portions,
-      modalResult.result.image
-    );
+    const { id } = modalResult.result;
     navigate({ to: "/recipes/$id", params: { id } });
   };
 
