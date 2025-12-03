@@ -5,6 +5,7 @@ import "./index.css";
 import "./tiptap.css";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import { VibrateActuator } from "./utils/vibrate";
 
 // Create a new router instance
 const router = createRouter({
@@ -27,6 +28,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
+      <VibrateActuator />
       <RouterProvider router={router} />
     </StrictMode>
   );

@@ -41,6 +41,7 @@ import {
 import classNames from "classnames";
 import { PortionsQuantityControls } from "./PortionQuantityControls";
 import { useWakeLock } from "../../utils/useWakeLock";
+import { vibrate } from "../../utils/vibrate";
 
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
@@ -142,6 +143,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   };
 
   const toggleMode = () => {
+    vibrate();
     if (mode === "edit") {
       setMode("cook");
     } else {
