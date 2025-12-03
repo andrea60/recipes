@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { useToggleFavourite } from "../../data/useToggleFavourite";
 import { HeartIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
+import { vibrate } from "../../utils/vibrate";
 
 type Props = {
   recipe: Recipe;
@@ -18,6 +19,7 @@ export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
   const onToggleFavourite = (evt: React.MouseEvent) => {
     toggleFavourite.execute(recipe.id, !recipe.isFavourite);
     evt.stopPropagation();
+    vibrate();
   };
   return (
     <div className={classNames("w-full", className)} key={recipe.id}>

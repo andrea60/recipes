@@ -58,7 +58,6 @@ export const RecipePage = () => {
   const recipeDoc = useEditableRecipe(id);
 
   if (!recipeDoc.pending && !recipeDoc.found) {
-    console.log("REcipe not found", recipeDoc);
     return <div>Not found</div>;
   }
 

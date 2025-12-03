@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { useMemo } from "react";
+import { vibrate } from "../../utils/vibrate";
 
 type Props = {
   min: number;
@@ -23,6 +24,10 @@ export const Slider = ({
     stepsArr.fill(null);
     return stepsArr;
   }, [max, min]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(Number(e.target.value));
+    vibrate();
+  };
   return (
     <div className="w-full">
       <input
@@ -30,7 +35,7 @@ export const Slider = ({
         min={min}
         max={max}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={handleChange}
         className="range w-full range-sm"
         step={step}
       />

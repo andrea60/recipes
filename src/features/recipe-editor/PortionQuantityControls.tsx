@@ -2,6 +2,7 @@ import { MinusIcon, PlusIcon } from "@phosphor-icons/react";
 import { useModal } from "../../components/modal/useModal";
 import { ChangePortionsModal } from "./ChangePortionsModal";
 import { motion } from "motion/react";
+import { vibrate } from "../../utils/vibrate";
 
 type Props = {
   onChange: (quantity: number) => void;
@@ -13,6 +14,7 @@ export const PortionsQuantityControls = ({ onChange, portions }: Props) => {
     const newVal = portions + quantity;
     if (newVal < 1) return;
     onChange(newVal);
+    vibrate();
   };
 
   const handlePortionsButtonClick = async () => {
