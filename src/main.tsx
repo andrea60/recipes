@@ -6,6 +6,7 @@ import "./tiptap.css";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import { VibrateActuator } from "./utils/vibrate";
+import { gestureDetector } from "./utils/gesture-detection";
 
 // Create a new router instance
 const router = createRouter({
@@ -15,6 +16,7 @@ const router = createRouter({
   },
   defaultViewTransition: {
     types: ({ fromLocation, toLocation }) => {
+      if (gestureDetector.hasSwipedInLast(250)) return false;
       let direction = "none";
       if (fromLocation && fromLocation.pathname !== toLocation.pathname) {
         if (toLocation.pathname.startsWith(fromLocation.pathname))
@@ -34,6 +36,8 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
+
+gestureDetector.startListening();
 
 // Render the app
 const rootElement = document.getElementById("root")!;

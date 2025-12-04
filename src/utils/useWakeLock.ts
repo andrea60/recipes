@@ -4,7 +4,7 @@ export const useWakeLock = (lock: boolean) => {
   const wakeLockSentinel = useRef<WakeLockSentinel | null>(null);
 
   useEffect(() => {
-    if (!lock) return;
+    if (!lock || !supportsWakeLock()) return;
     window.navigator.wakeLock.request("screen").then((wakeLock) => {
       wakeLockSentinel.current = wakeLock;
     });
@@ -13,4 +13,8 @@ export const useWakeLock = (lock: boolean) => {
       wakeLockSentinel.current?.release();
     };
   }, [lock]);
+};
+
+const supportsWakeLock = () => {
+  return "wakeLock" in window.navigator;
 };
