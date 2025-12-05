@@ -13,7 +13,8 @@ export const useCreateRecipe = () => {
   const createRecipe = async (
     name: string,
     portions: number,
-    image: FileDef
+    image: FileDef,
+    categories: string[]
   ) => {
     const id: string = crypto.randomUUID();
 
@@ -29,7 +30,7 @@ export const useCreateRecipe = () => {
       imagePath: ref.fullPath,
       content: "",
       isFavourite: false,
-      categories: [],
+      categories,
     });
     return id;
   };

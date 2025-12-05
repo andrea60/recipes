@@ -109,12 +109,15 @@ export const IngredientSelectorPopover = forwardRef<
     posLeft = window.screen.width - WIDTH;
   }
 
+  // Account for scroll offset when using fixed positioning
+  const posTop = position.top + position.height + window.scrollY;
+
   return (
     <div
       className="fixed bg-base-100 rounded-2xl shadow-md p-2 shadow-black/50"
       style={{
         left: posLeft,
-        top: position.top + position.height,
+        top: posTop,
         width: WIDTH,
       }}
     >

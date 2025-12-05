@@ -19,7 +19,12 @@ export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
   const create = async () => {
     if (!valid) return;
 
-    const id = await createRecipeAction.execute(name, portions, image);
+    const id = await createRecipeAction.execute(
+      name,
+      portions,
+      image,
+      categories
+    );
 
     close({ id });
   };
