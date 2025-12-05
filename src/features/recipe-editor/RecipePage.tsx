@@ -147,11 +147,11 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
   const [cookPortions, setCookPortions] = useState(recipe.portions);
 
   const setMode = (mode: RecipeMode) => {
-    navigate({ to: ".", search: (prev) => ({ ...prev, mode }) });
+    navigate({ to: ".", search: (prev) => ({ ...prev, mode }), replace: true });
   };
 
   const setView = (view: RecipeView) => {
-    navigate({ to: ".", search: (prev) => ({ ...prev, view }) });
+    navigate({ to: ".", search: (prev) => ({ ...prev, view }), replace: true });
   };
 
   const toggleMode = () => {

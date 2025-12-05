@@ -17,15 +17,14 @@ const router = createRouter({
   defaultViewTransition: {
     types: ({ fromLocation, toLocation }) => {
       if (gestureDetector.hasSwipedInLast(250)) return false;
-      let direction = "none";
       if (fromLocation && fromLocation.pathname !== toLocation.pathname) {
         if (toLocation.pathname.startsWith(fromLocation.pathname))
-          direction = "left";
+          return ["slide-left"];
         else if (fromLocation.pathname.startsWith(toLocation.pathname))
-          direction = "right";
+          return ["slide-right"];
       }
 
-      return [`slide-${direction}`];
+      return false;
     },
   },
 });

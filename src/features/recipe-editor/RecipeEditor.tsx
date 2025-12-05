@@ -13,6 +13,7 @@ import {
 } from "./IngredientSelectorPopover";
 import { useMemo, useRef, useState } from "react";
 import { IngredientRef } from "../../data/models";
+import classNames from "classnames";
 
 type JsonDocument = ReturnType<Editor["getJSON"]>;
 
@@ -99,7 +100,7 @@ export const RecipeEditor = ({
   );
 
   const convertedJson = useMemo(
-    () => jsonContent && convertRecipe(jsonContent, quantityMultiplier),
+    () => jsonContent && convertRecipe(jsonContent, quantityMultiplier, false),
     [jsonContent, readonly, quantityMultiplier]
   );
 
@@ -109,7 +110,7 @@ export const RecipeEditor = ({
       editable: !readonly,
       editorProps: {
         attributes: {
-          class: "grow",
+          class: "grow" + (readonly ? " readonly" : ""),
         },
       },
       extensions: [
@@ -127,7 +128,7 @@ export const RecipeEditor = ({
             class: "mention",
           },
           suggestion: {
-            char: "@",
+            char: !readonly ? "@" : "",
             allowSpaces: true,
             render: () => {
               return {
@@ -213,7 +214,8 @@ export const RecipeEditor = ({
 
 const convertRecipe = (
   content: JSONContent,
-  multiplier: number
+  multiplier: number,
+  stripMention: boolean
 ): JSONContent => {
   const newNode = { ...content };
   if (content.type === "mention") {
@@ -226,6 +228,7 @@ const convertRecipe = (
       const formatter = new Intl.NumberFormat("en-US", {
         maximumFractionDigits: 1,
       });
+
       newNode.attrs = {
         ...newNode.attrs,
         label: `${formatter.format(quantity)}${ingredient.unit} ${ingredient.name}`,
@@ -234,7 +237,9 @@ const convertRecipe = (
   }
 
   if (newNode.content)
-    newNode.content = newNode.content.map((c) => convertRecipe(c, multiplier));
+    newNode.content = newNode.content.map((c) =>
+      convertRecipe(c, multiplier, stripMention)
+    );
 
   return newNode;
 };

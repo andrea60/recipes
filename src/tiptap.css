@@ -32,7 +32,10 @@
     @apply text-primary;
 }
 
-.tiptap .mention {
-    @apply badge shadow-md px-2;
+.tiptap:not(.readonly) .mention {
+    @apply badge shadow-md px-2 font-bold;
     margin-top:-2px;
+}
+.tiptap.readonly .mention {
+    font-weight:bold;
 }
