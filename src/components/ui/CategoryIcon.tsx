@@ -1,13 +1,12 @@
-import { IconProps } from "@phosphor-icons/react";
+import { IconProps, LeafIcon, PepperIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
-import * as Icons from "@phosphor-icons/react";
 
 type Props = {
   iconName?: string;
 } & IconProps;
 export const CategoryIcon = ({ iconName, ...rest }: Props) => {
-  if (!iconName) return null;
-  const IconElement = Icons[iconName as keyof typeof Icons] as Icons.Icon;
-
-  return <IconElement {...rest} />;
+  return match(iconName)
+    .with("PepperIcon", () => <PepperIcon {...rest} />)
+    .with("LeafIcon", () => <LeafIcon {...rest} />)
+    .otherwise(() => null);
 };
