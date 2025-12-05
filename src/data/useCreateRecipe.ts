@@ -29,6 +29,7 @@ export const useCreateRecipe = () => {
       imagePath: ref.fullPath,
       content: "",
       isFavourite: false,
+      categories: [],
     });
     return id;
   };
