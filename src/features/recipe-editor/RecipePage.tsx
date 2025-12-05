@@ -1,6 +1,6 @@
 import { RecipeEditor } from "./RecipeEditor";
 import { Provider } from "jotai";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ArrowLeftIcon,
   BasketIcon,
@@ -8,10 +8,7 @@ import {
   CookingPotIcon,
   GearSixIcon,
   HeartIcon,
-  MinusIcon,
   PencilIcon,
-  PlusIcon,
-  UsersThreeIcon,
 } from "@phosphor-icons/react";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { RecipeNameEditor } from "./RecipeNameEditor";
@@ -21,18 +18,10 @@ import { useModal } from "../../components/modal/useModal";
 import { EditRecipeModal } from "./EditRecipeModal";
 import { useEditableRecipe } from "../../data/useEditableRecipe";
 import { FileDef } from "../../data/useCreateRecipe";
-import { ChangePortionsModal } from "./ChangePortionsModal";
 import { IngredientsList } from "./IngredientsList";
 import { Tabs } from "../../components/tab/Tabs";
 import { FirebaseImageDiv } from "../../firebase/components/FirebaseImageDiv";
-import {
-  AnimatePresence,
-  useMotionValue,
-  useMotionValueEvent,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { AnimatePresence } from "motion/react";
 import { motion } from "motion/react";
 import {
   CollapsibleHeaderLayout,
@@ -42,6 +31,8 @@ import classNames from "classnames";
 import { PortionsQuantityControls } from "./PortionQuantityControls";
 import { useWakeLock } from "../../utils/useWakeLock";
 import { vibrate } from "../../utils/vibrate";
+import { useCategories } from "../../data/Categories";
+import { CategoryIcon } from "../../components/ui/CategoryIcon";
 
 export type RecipeMode = "edit" | "cook";
 export type RecipeView = "recipe" | "ingredients";
@@ -145,6 +136,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
     from: "/recipes/$id/",
   });
   const [cookPortions, setCookPortions] = useState(recipe.portions);
+  const { categoriesMap } = useCategories();
 
   const setMode = (mode: RecipeMode) => {
     navigate({ to: ".", search: (prev) => ({ ...prev, mode }), replace: true });
@@ -195,13 +187,31 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
           )}
         </AnimatePresence>
       </div>
-      <div className="flex flex-row border-b border-b-base-100 pb-3 mb-3 gap-2 pt-2">
+      <div className="flex flex-row  mb-3 gap-2 pt-2">
         <RecipeNameEditor
           name={recipe.name}
           onChange={handleRename}
           readonly={mode === "cook"}
         />
       </div>
+      {mode === "cook" && (
+        <motion.div className="flex flex-row gap-2 mb-4">
+          {recipe.categories.map((catId) => {
+            const category = categoriesMap.get(catId);
+            if (!category) return null;
+
+            return (
+              <span
+                key={category.id}
+                className="badge badge-lg shadow shadow-black/50"
+              >
+                <CategoryIcon iconName={category.icon} weight="fill" />{" "}
+                {category.name}
+              </span>
+            );
+          })}
+        </motion.div>
+      )}
       <Tabs
         maxWidth={384}
         disabled={mode !== "cook"}
@@ -218,7 +228,7 @@ const RecipePageContent = ({ recipe, onChange }: Props) => {
             ),
             content: (
               <>
-                <h1 className="my-4 text-2xl font-bold">
+                <h1 className="mb-4 text-2xl font-bold">
                   Instructions for {displayPortions} portions:
                 </h1>
                 <RecipeEditor

@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext } from "react";
+import { createContext, PropsWithChildren, useContext, useMemo } from "react";
 import { categoriesCollection } from "../firebase/firebase-references";
 import { useQuery } from "../firebase/queries/useQuery";
 import { Category } from "./models";
@@ -13,5 +13,13 @@ export const CategoriesProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const useCategories = () => {
-  return useContext(Ctx);
+  const categories = useContext(Ctx);
+
+  const categoriesMap = useMemo(() => {
+    const map = new Map<string, Category>();
+    categories.forEach((cat) => map.set(cat.id, cat));
+    return map;
+  }, categories);
+
+  return { categories, categoriesMap };
 };

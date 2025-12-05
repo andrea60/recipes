@@ -70,7 +70,7 @@ export const Tabs = ({
                 scale: { type: "spring", visualDuration: 0.2, bounce: 0.4 },
               }}
               className={classNames(
-                "tabs tabs-sm flex-nowrap tabs-box bg-base-300 mb-2 inline-flex w-full"
+                "tabs tabs-sm flex-nowrap tabs-box bg-base-300 mb-4 inline-flex w-full"
               )}
               style={{ maxWidth }}
             >

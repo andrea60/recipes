@@ -17,7 +17,7 @@ type Props = {
 export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
   const navigate = useNavigate();
   const toggleFavourite = useToggleFavourite();
-  const allCategories = useCategories();
+  const { categories: allCategories } = useCategories();
 
   const onToggleFavourite = (evt: React.MouseEvent) => {
     toggleFavourite.execute(recipe.id, !recipe.isFavourite);

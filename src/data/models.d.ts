@@ -24,4 +24,5 @@ export type Recipe = {
 export type Category = {
   name: string;
   id: string;
+  icon?: string;
 };

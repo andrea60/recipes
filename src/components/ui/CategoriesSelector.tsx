@@ -12,7 +12,7 @@ export const CategoriesSelector = ({
   onChange,
   className,
 }: Props) => {
-  const categories = useCategories();
+  const { categories } = useCategories();
 
   const onClick = (id: string, isSelected: boolean) => {
     if (!isSelected) {
