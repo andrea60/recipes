@@ -2,12 +2,8 @@ import { useState } from "react";
 import { FileInput } from "../../components/FileInput";
 import { ModalContentProps } from "../../components/modal/useModal";
 import { FileDef, useCreateRecipe } from "../../data/useCreateRecipe";
-import {
-  CameraIcon,
-  ClipboardIcon,
-  SpinnerGapIcon,
-} from "@phosphor-icons/react";
 import { FileSelector } from "./FileSelector";
+import { CategoriesSelector } from "../../components/ui/CategoriesSelector";
 
 type ModalProps = ModalContentProps<{
   id: string;
@@ -15,6 +11,7 @@ type ModalProps = ModalContentProps<{
 export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
   const [name, setName] = useState("");
   const [portions, setPortions] = useState(2);
+  const [categories, setCategories] = useState<string[]>([]);
   const [image, setImage] = useState<FileDef>();
   const createRecipeAction = useCreateRecipe();
 
@@ -53,6 +50,11 @@ export const CreateRecipeModal = ({ close, cancel }: ModalProps) => {
           />
         </fieldset>
         <FileSelector onChange={setImage} />
+        <CategoriesSelector
+          className="col-span-2"
+          onChange={setCategories}
+          selected={categories}
+        />
       </div>
       <div className="flex gap-2 mt-2">
         <button className="btn btn-neutral" onClick={cancel}>

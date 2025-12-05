@@ -18,4 +18,10 @@ export type Recipe = {
   imagePath: string;
   ingredients: IngredientRef[];
   isFavourite: boolean;
+  categories: string[];
+};
+
+export type Category = {
+  name: string;
+  id: string;
 };

@@ -6,6 +6,8 @@ import { useToggleFavourite } from "../../data/useToggleFavourite";
 import { HeartIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { vibrate } from "../../utils/vibrate";
+import { useCategories } from "../../data/Categories";
+import { useMemo } from "react";
 
 type Props = {
   recipe: Recipe;
@@ -15,12 +17,22 @@ type Props = {
 export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
   const navigate = useNavigate();
   const toggleFavourite = useToggleFavourite();
+  const allCategories = useCategories();
 
   const onToggleFavourite = (evt: React.MouseEvent) => {
     toggleFavourite.execute(recipe.id, !recipe.isFavourite);
     evt.stopPropagation();
     vibrate();
   };
+
+  const categories = useMemo(
+    () =>
+      recipe.categories
+        .map((id) => allCategories.find((cat) => cat.id === id)?.name)
+        .filter((cat) => !!cat)
+        .join(", "),
+    [allCategories, recipe]
+  );
   return (
     <div className={classNames("w-full", className)} key={recipe.id}>
       <div className="flex flex-col gap-2">
@@ -53,7 +65,7 @@ export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
           <h1 className="text-lg text-left font-bold flex-1 overflow-ellipsis w-full whitespace-nowrap overflow-hidden">
             {recipe.name}
           </h1>
-          <p className="text-sm">Vegan</p>
+          <p className="text-sm">{categories}</p>
         </div>
       </div>
     </div>
