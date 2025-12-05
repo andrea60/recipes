@@ -34,7 +34,13 @@ export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
     [allCategories, recipe]
   );
   return (
-    <div className={classNames("w-full", className)} key={recipe.id}>
+    <motion.div
+      className={classNames("w-full", className)}
+      key={recipe.id}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="flex flex-col gap-2">
         <div
           className="flex-1 relative"
@@ -68,6 +74,6 @@ export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
           <p className="text-sm">{categories}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

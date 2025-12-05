@@ -6,18 +6,26 @@ import {
 import { useRecipes } from "../../data/useRecipes";
 import { useModal } from "../../components/modal/useModal";
 import { useCreateRecipe } from "../../data/useCreateRecipe";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useAuth } from "../../auth/useAuth";
 import { Avatar } from "../../components/Avatar";
 import { CreateRecipeModal } from "./CreateRecipeModal";
 import { LogoutModal } from "./LogoutModal";
 import { MasonryGrid } from "../../components/ui/Masonry";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useScrollState } from "../../utils/useScrollState";
 import classNames from "classnames";
+import { AnimatePresence, motion } from "motion/react";
+import { SearchDrawer } from "./SearchDrawer";
+
+export type RecipesListFilters = {
+  searchTerm?: string;
+  categoryId?: string;
+};
 
 export const RecipesListPage = () => {
-  const recipes = useRecipes();
+  const filters = useSearch({ from: "/recipes/" });
+  const recipes = useRecipes(filters);
   const navigate = useNavigate();
   const { openModal } = useModal();
   const { user, signOut } = useAuth();
@@ -55,42 +63,38 @@ export const RecipesListPage = () => {
 
   return (
     <>
-      <div
+      <motion.div
         className={classNames(
-          "fixed w-full top-0  p-4 pb-1 rounded-b-4xl z-10",
+          "w-full px-4 flex flex-row justify-between items-center z-10 bg-base-200 rounded-b-xl",
           {
-            "shadow-sm shadow-black glass-bg-3": !isAtTop,
+            "shadow-md shadow-black": !isAtTop,
           }
         )}
+        animate={{
+          paddingTop: isAtTop ? 16 : 10,
+          paddingBottom: isAtTop ? 16 : 10,
+        }}
       >
-        <div className="flex flex-row mb-4 justify-between">
-          <button
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={handleLogout}
-          >
-            <Avatar photoUrl={user?.photoURL || ""} />
-            <h1>Welcome {getFirstName(user?.displayName ?? "")}</h1>
-          </button>
-          <button className="btn btn-outline btn-circle" onClick={handleCreate}>
-            <PlusCircleIcon size="24" weight="fill" />
-          </button>
-        </div>
-        <div className="mb-4">
-          <label className="input w-full">
-            <MagnifyingGlassIcon size={22} />
-            <input type="text" className="grow" placeholder="Search..." />
-            <div>
-              <button className="btn btn-sm shadow-md relative -right-2">
-                <SlidersHorizontalIcon size={22} />
-              </button>
-            </div>
-          </label>
-        </div>
-      </div>
-      <div className="flex-1 p-4 pt-36 overflow-y-auto" ref={contentRef}>
+        <button
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={handleLogout}
+        >
+          <Avatar photoUrl={user?.photoURL || ""} />
+          <h1>Welcome {getFirstName(user?.displayName ?? "")}</h1>
+        </button>
+        <motion.button
+          layout="size"
+          className={classNames("btn btn-circle")}
+          onClick={handleCreate}
+        >
+          <PlusCircleIcon size={48} weight="fill" />
+        </motion.button>
+      </motion.div>
+      <div className="flex-1 p-4 overflow-y-auto" ref={contentRef}>
         <h1 className="text-3xl font-bold mb-4">Recipes</h1>
         <MasonryGrid elements={recipes.data ?? []} />
       </div>
+      <SearchDrawer />
     </>
   );
 };

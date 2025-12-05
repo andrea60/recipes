@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { Recipe } from "../../data/models";
 import { RecipeCard } from "../../features/recipes-list/RecipeCard";
+import { AnimatePresence } from "motion/react";
 
 type Props = {
   elements: Recipe[];
@@ -21,5 +22,9 @@ export const MasonryGrid = ({ elements }: Props) => {
 
     idx++;
   }
-  return <div className="grid grid-cols-2 gap-10">{children}</div>;
+  return (
+    <div className="grid grid-cols-2 gap-10">
+      <AnimatePresence>{children}</AnimatePresence>
+    </div>
+  );
 };

@@ -19,7 +19,7 @@ export const useCategories = () => {
     const map = new Map<string, Category>();
     categories.forEach((cat) => map.set(cat.id, cat));
     return map;
-  }, categories);
+  }, [categories]);
 
   return { categories, categoriesMap };
 };
