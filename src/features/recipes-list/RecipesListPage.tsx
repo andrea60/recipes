@@ -1,7 +1,9 @@
 import {
+  EmptyIcon,
   MagnifyingGlassIcon,
   PlusCircleIcon,
   SlidersHorizontalIcon,
+  SmileySadIcon,
 } from "@phosphor-icons/react";
 import { useRecipes } from "../../data/useRecipes";
 import { useModal } from "../../components/modal/useModal";
@@ -17,14 +19,10 @@ import { useScrollState } from "../../utils/useScrollState";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { SearchDrawer } from "./SearchDrawer";
-
-export type RecipesListFilters = {
-  searchTerm?: string;
-  categoryId?: string;
-};
+import { useRecipesFilters } from "./useRecipesFilters";
 
 export const RecipesListPage = () => {
-  const filters = useSearch({ from: "/recipes/" });
+  const filters = useRecipesFilters();
   const recipes = useRecipes(filters);
   const navigate = useNavigate();
   const { openModal } = useModal();
@@ -61,6 +59,9 @@ export const RecipesListPage = () => {
     }
   };
 
+  const emptySearch =
+    filters.hasFilters && recipes.data && recipes.data.length === 0;
+
   return (
     <>
       <motion.div
@@ -91,8 +92,14 @@ export const RecipesListPage = () => {
         </motion.button>
       </motion.div>
       <div className="flex-1 p-4 overflow-y-auto" ref={contentRef}>
-        <h1 className="text-3xl font-bold mb-4">Recipes</h1>
-        <MasonryGrid elements={recipes.data ?? []} />
+        <h1 className="text-3xl font-bold mb-4">
+          {filters.hasFilters ? "Search Results" : "Recipes"}
+        </h1>
+
+        <MasonryGrid
+          elements={recipes.data ?? []}
+          placeholder={filters.hasFilters && <EmptySearchPlaceholder />}
+        />
       </div>
       <SearchDrawer />
     </>
@@ -102,4 +109,19 @@ export const RecipesListPage = () => {
 const getFirstName = (fullName: string | undefined) => {
   if (!fullName) return "";
   return fullName.split(" ")[0];
+};
+
+const EmptySearchPlaceholder = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="py-12 flex flex-col text-center items-center w-full col-span-2 text-"
+    >
+      <SmileySadIcon size={64} weight="thin" />
+      <h1 className="text-base-content/75 mt-2">
+        Nothing found... Time to be creative?
+      </h1>
+    </motion.div>
+  );
 };

@@ -9,27 +9,22 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useResettableState } from "../../utils/useResettableState";
 import classNames from "classnames";
 import { useCategories } from "../../data/Categories";
-import { RecipesListFilters } from "./RecipesListPage";
 import { useElementHeight } from "../../utils/useElementHeight";
 import { match } from "ts-pattern";
+import { RecipesListFilters, useRecipesFilters } from "./useRecipesFilters";
 
 export const SearchDrawer = () => {
-  const { searchTerm, categoryId } = useSearch({ from: "/recipes/" });
+  const { searchTerm, categoryId, updateFilters } = useRecipesFilters();
   const [containerRef, containerHeight] = useElementHeight<HTMLDivElement>();
   const [filtersRef, filtersHeight] = useElementHeight<HTMLDivElement>();
   const [isOpen, setIsOpen] = useState(!!categoryId || !!searchTerm);
   const [filtersOpen, setFiltersOpen] = useState(!!categoryId);
   const [search, setSearch] = useResettableState(searchTerm, [searchTerm]);
   const { categories: allCategories } = useCategories();
-  const navigate = useNavigate();
 
   const updateSearch = useCallback(
     debounce((searchTerm: string) => {
-      navigate({
-        to: ".",
-        search: (s) => ({ ...s, searchTerm }),
-        replace: true,
-      });
+      updateFilters({ searchTerm });
     }, 250),
     []
   );
@@ -41,21 +36,13 @@ export const SearchDrawer = () => {
 
   const selectCategory = (id: string) => {
     const newCategoryId = id === categoryId ? undefined : id;
-    navigate({
-      to: ".",
-      search: (s) => ({ ...s, categoryId: newCategoryId }),
-      replace: true,
-    });
+    updateFilters({ categoryId: newCategoryId });
   };
 
   const toggleFilters = () => {
     if (filtersOpen) {
       setFiltersOpen(false);
-      navigate({
-        to: ".",
-        search: (s) => ({ ...s, categoryId: undefined }),
-        replace: true,
-      });
+      updateFilters({ categoryId: undefined });
     } else {
       setFiltersOpen(true);
     }

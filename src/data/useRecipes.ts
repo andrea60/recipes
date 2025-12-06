@@ -1,4 +1,4 @@
-import { RecipesListFilters } from "../features/recipes-list/RecipesListPage";
+import { RecipesListFilters } from "../features/recipes-list/useRecipesFilters";
 import { recipesCollection } from "../firebase/firebase-references";
 import { useRealtimeQuery } from "../firebase/queries/useRealtimeQuery";
 import { useQueryTransform } from "../firebase/useQueryTransform";

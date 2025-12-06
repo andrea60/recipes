@@ -5,8 +5,9 @@ import { AnimatePresence } from "motion/react";
 
 type Props = {
   elements: Recipe[];
+  placeholder: React.ReactNode;
 };
-export const MasonryGrid = ({ elements }: Props) => {
+export const MasonryGrid = ({ elements, placeholder }: Props) => {
   const children = [];
   let idx = 0;
   for (const el of elements) {
@@ -22,6 +23,8 @@ export const MasonryGrid = ({ elements }: Props) => {
 
     idx++;
   }
+
+  if (children.length === 0) children.push(placeholder);
   return (
     <div className="grid grid-cols-2 gap-10">
       <AnimatePresence mode="popLayout">{children}</AnimatePresence>

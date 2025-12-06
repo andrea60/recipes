@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  RecipesListFilters,
-  RecipesListPage,
-} from "../../features/recipes-list/RecipesListPage";
+import { RecipesListPage } from "../../features/recipes-list/RecipesListPage";
+import { RecipesListFilters } from "../../features/recipes-list/useRecipesFilters";
 
 export const Route = createFileRoute("/recipes/")({
   component: RecipesListPage,
