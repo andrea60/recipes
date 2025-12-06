@@ -10,11 +10,13 @@ import { useResettableState } from "../../utils/useResettableState";
 import classNames from "classnames";
 import { useCategories } from "../../data/Categories";
 import { RecipesListFilters } from "./RecipesListPage";
+import { useElementHeight } from "../../utils/useElementHeight";
+import { match } from "ts-pattern";
 
 export const SearchDrawer = () => {
   const { searchTerm, categoryId } = useSearch({ from: "/recipes/" });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerHeight, setContainerHeight] = useState<number>();
+  const [containerRef, containerHeight] = useElementHeight<HTMLDivElement>();
+  const [filtersRef, filtersHeight] = useElementHeight<HTMLDivElement>();
   const [isOpen, setIsOpen] = useState(!!categoryId || !!searchTerm);
   const [filtersOpen, setFiltersOpen] = useState(!!categoryId);
   const [search, setSearch] = useResettableState(searchTerm, [searchTerm]);
@@ -46,10 +48,6 @@ export const SearchDrawer = () => {
     });
   };
 
-  useLayoutEffect(() => {
-    setContainerHeight(containerRef.current?.clientHeight);
-  });
-
   const toggleFilters = () => {
     if (filtersOpen) {
       setFiltersOpen(false);
@@ -65,12 +63,21 @@ export const SearchDrawer = () => {
 
   const activeFilters = countActiveFilters({ searchTerm, categoryId });
 
+  const height = match({ filtersOpen, isOpen })
+    // if not open, push down the whole height
+    .with({ isOpen: false }, () => -containerHeight)
+    // only search bar visible, push down the filters space
+    .with({ filtersOpen: false }, () => -containerHeight + filtersHeight)
+    // all visible, no push down
+    .with({ filtersOpen: true }, () => -1)
+    .exhaustive();
+
   return (
     <motion.div
       layout="position"
       className="fixed bottom-0 left-0 w-full px-2 py-6 shadow-black shadow-md glass-bg-3 rounded-t-box"
       ref={containerRef}
-      style={{ bottom: isOpen ? -1 : -(containerHeight ?? 0) }}
+      style={{ bottom: height }}
     >
       <div className="flex justify-center h-0">
         <motion.button
@@ -113,22 +120,20 @@ export const SearchDrawer = () => {
           <SlidersHorizontalIcon size={22} />
         </button>
       </label>
-      {filtersOpen && (
-        <div className="flex flex-row gap-2 flex-wrap mt-4">
-          {allCategories.map((c) => (
-            <motion.span
-              key={c.id}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => selectCategory(c.id)}
-              className={classNames("badge", {
-                "badge-primary": categoryId === c.id,
-              })}
-            >
-              {c.name}
-            </motion.span>
-          ))}
-        </div>
-      )}
+      <div className="flex flex-row gap-2 flex-wrap pt-4" ref={filtersRef}>
+        {allCategories.map((c) => (
+          <motion.span
+            key={c.id}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => selectCategory(c.id)}
+            className={classNames("badge", {
+              "badge-primary": categoryId === c.id,
+            })}
+          >
+            {c.name}
+          </motion.span>
+        ))}
+      </div>
     </motion.div>
   );
 };

@@ -36,6 +36,8 @@ export const RecipeCard = ({ recipe, className, aspectRatio }: Props) => {
   return (
     <motion.div
       className={classNames("w-full", className)}
+      layout="position"
+      layoutId={"recipe-card-" + recipe.id}
       key={recipe.id}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

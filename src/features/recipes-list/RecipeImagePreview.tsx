@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { Recipe } from "../../data/models";
 import { useFirebaseDownloadUrl } from "../../firebase/useFirebaseDownloadUrl";
 import { useRef, useState } from "react";
+import { motion } from "motion/react";
 
 type Props = {
   recipe: Recipe;
@@ -17,7 +18,8 @@ export const RecipesImagePreview = ({ recipe, aspectRatio }: Props) => {
   };
 
   return (
-    <div
+    <motion.div
+      layout
       ref={containerRef}
       className={classNames(
         "rounded-2xl shadow-md shadow-black ",
@@ -30,6 +32,6 @@ export const RecipesImagePreview = ({ recipe, aspectRatio }: Props) => {
       }}
     >
       <img src={url} className="hidden" onLoad={onImageLoaded} />
-    </div>
+    </motion.div>
   );
 };

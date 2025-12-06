@@ -24,7 +24,7 @@ export const MasonryGrid = ({ elements }: Props) => {
   }
   return (
     <div className="grid grid-cols-2 gap-10">
-      <AnimatePresence>{children}</AnimatePresence>
+      <AnimatePresence mode="popLayout">{children}</AnimatePresence>
     </div>
   );
 };
