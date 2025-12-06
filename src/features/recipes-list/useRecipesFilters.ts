@@ -2,7 +2,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 
 export type RecipesListFilters = {
   searchTerm?: string;
-  categoryId?: string;
+  categories?: string[];
 };
 
 export const useRecipesFilters = () => {
@@ -25,9 +25,11 @@ export const useRecipesFilters = () => {
     });
   };
 
+  const hasCategoryFilter = filters.categories && filters.categories.length > 0;
+
   return {
     ...filters,
-    hasFilters: !!filters.categoryId || !!filters.searchTerm,
+    hasFilters: hasCategoryFilter || !!filters.searchTerm,
     updateFilters,
     resetFilters,
   };

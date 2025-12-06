@@ -4,20 +4,20 @@ import { useRealtimeQuery } from "../firebase/queries/useRealtimeQuery";
 import { useQueryTransform } from "../firebase/useQueryTransform";
 import { Recipe } from "./models";
 
-export const useRecipes = ({ categoryId, searchTerm }: RecipesListFilters) => {
+export const useRecipes = ({ categories, searchTerm }: RecipesListFilters) => {
   const query = useRealtimeQuery(recipesCollection());
 
   return useQueryTransform(
     query,
     (data) => {
-      if (!searchTerm && !categoryId) return data;
+      if (!searchTerm && (categories?.length ?? 0) < 1) return data;
 
       return data.filter(
         (x) =>
-          matchesCategory(x, categoryId) && matchesSearchTerm(x, searchTerm)
+          matchesCategory(x, categories) && matchesSearchTerm(x, searchTerm)
       );
     },
-    [searchTerm, categoryId]
+    [searchTerm, categories]
   );
 };
 
@@ -27,8 +27,11 @@ const matchesSearchTerm = (item: Recipe, searchTerm?: string) => {
   return item.name.toLowerCase().includes(searchTerm.toLowerCase());
 };
 
-const matchesCategory = (item: Recipe, categoryId?: string) => {
-  if (!categoryId) return true;
+const matchesCategory = (item: Recipe, categories?: string[]) => {
+  if (!categories || categories.length === 0) return true;
 
-  return item.categories.includes(categoryId);
+  for (const categoryId of categories) {
+    if (!item.categories.includes(categoryId)) return false;
+  }
+  return true;
 };

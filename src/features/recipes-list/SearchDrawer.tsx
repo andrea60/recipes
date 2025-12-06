@@ -15,12 +15,12 @@ import { match } from "ts-pattern";
 import { RecipesListFilters, useRecipesFilters } from "./useRecipesFilters";
 
 export const SearchDrawer = () => {
-  const { searchTerm, categoryId, updateFilters, hasFilters, resetFilters } =
+  const { searchTerm, categories, updateFilters, hasFilters, resetFilters } =
     useRecipesFilters();
   const [containerRef, containerHeight] = useElementHeight<HTMLDivElement>();
   const [filtersRef, filtersHeight] = useElementHeight<HTMLDivElement>();
-  const [isOpen, setIsOpen] = useState(!!categoryId || !!searchTerm);
-  const [filtersOpen, setFiltersOpen] = useState(!!categoryId);
+  const [isOpen, setIsOpen] = useState(hasFilters);
+  const [filtersOpen, setFiltersOpen] = useState((categories?.length ?? 0) > 0);
   const [search, setSearch] = useResettableState(searchTerm, [searchTerm]);
   const { categories: allCategories } = useCategories();
 
@@ -37,20 +37,22 @@ export const SearchDrawer = () => {
   };
 
   const selectCategory = (id: string) => {
-    const newCategoryId = id === categoryId ? undefined : id;
-    updateFilters({ categoryId: newCategoryId });
+    const isSelected = categories?.includes(id) ?? false;
+    if (isSelected)
+      updateFilters({ categories: categories?.filter((f) => f !== id) });
+    else updateFilters({ categories: [...(categories || []), id] });
   };
 
   const toggleFilters = () => {
     if (filtersOpen) {
       setFiltersOpen(false);
-      updateFilters({ categoryId: undefined });
+      updateFilters({ categories: undefined });
     } else {
       setFiltersOpen(true);
     }
   };
 
-  const activeFilters = countActiveFilters({ searchTerm, categoryId });
+  const activeFilters = countActiveFilters({ searchTerm, categories });
 
   const height = match({ filtersOpen, isOpen })
     // if not open, push down the whole height
@@ -128,7 +130,7 @@ export const SearchDrawer = () => {
             whileTap={{ scale: 0.9 }}
             onClick={() => selectCategory(c.id)}
             className={classNames("badge", {
-              "badge-primary": categoryId === c.id,
+              "badge-primary": categories?.includes(c.id),
             })}
           >
             {c.name}
@@ -140,8 +142,7 @@ export const SearchDrawer = () => {
 };
 
 const countActiveFilters = (filters: RecipesListFilters) => {
-  let c = 0;
-  if (!!filters.categoryId) c++;
+  let c = filters.categories?.length ?? 0;
   if (!!filters.searchTerm) c++;
   return c;
 };
