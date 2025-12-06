@@ -1,4 +1,5 @@
 import {
+  ArrowCounterClockwiseIcon,
   MagnifyingGlassIcon,
   SlidersHorizontalIcon,
 } from "@phosphor-icons/react";
@@ -14,7 +15,8 @@ import { match } from "ts-pattern";
 import { RecipesListFilters, useRecipesFilters } from "./useRecipesFilters";
 
 export const SearchDrawer = () => {
-  const { searchTerm, categoryId, updateFilters } = useRecipesFilters();
+  const { searchTerm, categoryId, updateFilters, hasFilters, resetFilters } =
+    useRecipesFilters();
   const [containerRef, containerHeight] = useElementHeight<HTMLDivElement>();
   const [filtersRef, filtersHeight] = useElementHeight<HTMLDivElement>();
   const [isOpen, setIsOpen] = useState(!!categoryId || !!searchTerm);
@@ -98,14 +100,26 @@ export const SearchDrawer = () => {
           placeholder="Search"
           onChange={handleSearchChanged}
         />
-        <button
-          className={classNames("btn btn-sm shadow-md relative -right-2", {
-            "btn-primary": filtersOpen,
-          })}
-          onClick={toggleFilters}
-        >
-          <SlidersHorizontalIcon size={22} />
-        </button>
+
+        <div className="flex flex-row gap-1">
+          {hasFilters && (
+            <button
+              className="btn btn-sm shadow-md relative -right-2"
+              disabled={!hasFilters}
+              onClick={resetFilters}
+            >
+              <ArrowCounterClockwiseIcon size={22} />
+            </button>
+          )}
+          <button
+            className={classNames("btn btn-sm shadow-md relative -right-2", {
+              "btn-primary": filtersOpen,
+            })}
+            onClick={toggleFilters}
+          >
+            <SlidersHorizontalIcon size={22} />
+          </button>
+        </div>
       </label>
       <div className="flex flex-row gap-2 flex-wrap pt-6" ref={filtersRef}>
         {allCategories.map((c) => (

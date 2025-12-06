@@ -17,9 +17,18 @@ export const useRecipesFilters = () => {
     });
   };
 
+  const resetFilters = () => {
+    navigate({
+      to: ".",
+      search: {},
+      replace: true,
+    });
+  };
+
   return {
     ...filters,
     hasFilters: !!filters.categoryId || !!filters.searchTerm,
     updateFilters,
+    resetFilters,
   };
 };
