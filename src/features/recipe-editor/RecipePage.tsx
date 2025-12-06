@@ -10,7 +10,12 @@ import {
   HeartIcon,
   PencilIcon,
 } from "@phosphor-icons/react";
-import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useRouter,
+  useSearch,
+} from "@tanstack/react-router";
 import { RecipeNameEditor } from "./RecipeNameEditor";
 import { IngredientRef, Recipe } from "../../data/models";
 import debounce from "lodash.debounce";
@@ -40,7 +45,7 @@ export type RecipeView = "recipe" | "ingredients";
 export const RecipePage = () => {
   const { id } = useParams({ from: "/recipes/$id/" });
   const { openModal } = useModal();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { mode = "cook" } = useSearch({
     from: "/recipes/$id/",
   });
@@ -88,7 +93,7 @@ export const RecipePage = () => {
         <div className="w-full flex justify-between">
           <button
             className="btn btn-circle btn-outline btn-lg bg-base-200 shadow-lg shadow-black/25"
-            onClick={() => navigate({ to: ".." })}
+            onClick={() => router.history.back()}
           >
             <ArrowLeftIcon size={24} weight="bold" />
           </button>

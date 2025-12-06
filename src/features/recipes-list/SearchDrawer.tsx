@@ -107,7 +107,7 @@ export const SearchDrawer = () => {
           <SlidersHorizontalIcon size={22} />
         </button>
       </label>
-      <div className="flex flex-row gap-2 flex-wrap pt-4" ref={filtersRef}>
+      <div className="flex flex-row gap-2 flex-wrap pt-6" ref={filtersRef}>
         {allCategories.map((c) => (
           <motion.span
             key={c.id}
