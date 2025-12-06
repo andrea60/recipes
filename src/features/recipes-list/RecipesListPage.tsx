@@ -72,8 +72,8 @@ export const RecipesListPage = () => {
           }
         )}
         animate={{
-          paddingTop: isAtTop ? 16 : 10,
-          paddingBottom: isAtTop ? 16 : 10,
+          paddingTop: 10,
+          paddingBottom: 10,
         }}
       >
         <button

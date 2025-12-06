@@ -20,6 +20,10 @@ body, html, #root {
   @apply border bg-base-100 border-base-300 shadow-[0_.1rem_.5rem_-.3rem_#000];
 }
 
+.shadow-1 {
+  box-shadow:0px 0px 5px 1px rgb(0 0 0 / 75%);
+}
+
 .glass-bg {
   background: rgba(0, 0, 0, 0.31);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);

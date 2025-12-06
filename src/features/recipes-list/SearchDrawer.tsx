@@ -62,7 +62,7 @@ export const SearchDrawer = () => {
   return (
     <motion.div
       layout="position"
-      className="fixed bottom-0 left-0 w-full px-2 py-6 shadow-black shadow-md glass-bg-3 rounded-t-box"
+      className="fixed bottom-0 left-0 w-full px-4 py-6 shadow-1 glass-bg-3 rounded-t-box z-10"
       ref={containerRef}
       style={{ bottom: height }}
     >
