@@ -68,8 +68,8 @@ export const SearchDrawer = () => {
     >
       <div className="flex justify-center h-0">
         <motion.button
-          className="btn btn-lg btn-outline btn-circle bg-base-100 relative border-primary"
-          animate={{ top: isOpen ? -60 : -90 }}
+          className="btn btn-xl btn-outline btn-circle bg-base-100 relative border-primary"
+          animate={{ top: isOpen ? -70 : -100 }}
           onClick={() => setIsOpen((x) => !x)}
           layout
           whileTap={{ scale: 0.9 }}
@@ -86,7 +86,7 @@ export const SearchDrawer = () => {
               </motion.span>
             )}
           </AnimatePresence>
-          <MagnifyingGlassIcon size={22} />
+          <MagnifyingGlassIcon size={28} />
         </motion.button>
       </div>
       <label className="input w-full">
