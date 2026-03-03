@@ -7,6 +7,10 @@ type Props = {
 };
 
 export const IngredientsList = ({ ingredients, quantityMultiplier }: Props) => {
+  const quantityFormatter = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 2,
+  });
+
   return (
     <>
       <h1 className="mb-4 text-2xl font-bold">Things you need</h1>
@@ -16,7 +20,8 @@ export const IngredientsList = ({ ingredients, quantityMultiplier }: Props) => {
             <>
               <div key={i.id + "-qnt"} className="font-bold text-primary">
                 <DotIcon className="inline mr-1" weight="fill" fontSize={18} />
-                {i.quantity * quantityMultiplier} {i.unit}
+                {quantityFormatter.format(i.quantity * quantityMultiplier)}{" "}
+                {i.unit}
               </div>
               <div key={i.id + "-name"}>{i.name}</div>
             </>
